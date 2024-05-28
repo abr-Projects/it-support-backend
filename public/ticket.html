@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Failure Report Form</title>
+    <link rel="stylesheet" href="/normalize.css" />
+    <link rel="stylesheet" href="/dist/client.css" />
+</head>
+<body>
+
+    <h1 id="status">IT Failure</h1>
+
+
+
+    <label>Location</label>
+    <input id="floor" type="number" min="1" max="6" />
+    <input id="room" type="number" min="1" max="22" />
+    
+    <legend>Problem(s):</legend>
+    <div id="problems"></div>
+
+
+    Description:<br>
+    <textarea id='description' rows='4' cols='50'></textarea><br>
+    <!-- Reset and Submit buttons -->
+    <input type='reset' value='RESET'>
+    <input type='submit' value='SUBMIT' id="submit">
+
+    <script type="module" src="/dist/client.js"></script>
+
+ </body>
+ </html>

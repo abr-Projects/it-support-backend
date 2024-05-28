@@ -29,3 +29,45 @@ h6 {
 #app {
   padding: 1rem;
 }
+
+
+
+
+.app {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+
+.app input[type="text"],
+.app input[type="password"]
+{
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #000000;
+
+}
+
+.app input[type="button"] {
+  width: 105%;
+  padding: 10px;
+  background-color: #31ccec;
+  border: none;
+  color: #ffffff;
+
+  cursor: pointer;
+}
+
+.app input[type="button"]:hover {
+  background-color: #1976d2;
+}
+
+
+
+table, th, td {
+  border:1px solid black;
+}

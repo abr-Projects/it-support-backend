@@ -7,5 +7,19 @@
       "fileMatch": ["partykit.json"],
       "url": "https://www.partykit.io/schema.json"
     }
+  ],
+  "sqltools.connections": [
+    {
+      "pgOptions": {
+        "ssl": {
+          "rejectUnauthorized": true
+        }
+      },
+      "previewLimit": 50,
+      "server": "localhost",
+      "driver": "PostgreSQL",
+      "connectString": "postgres://it_support_db_user:O5ZDEecrcXLNIRYEBsZShRm6B1F1RT5b@dpg-cojpa06d3nmc73bvql00-a.singapore-postgres.render.com/it_support_db",
+      "name": "it_support_db"
+    }
   ]
 }
