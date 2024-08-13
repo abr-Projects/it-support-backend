@@ -1,0 +1,1 @@
+ALTER TABLE staff add column passw varchar(255);

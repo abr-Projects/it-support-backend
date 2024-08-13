@@ -6,26 +6,156 @@
     <title>IT Failure Report Form</title>
     <link rel="stylesheet" href="/normalize.css" />
     <link rel="stylesheet" href="/dist/client.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
 <body>
+    <div class="navbar">
+        
+        <a href="/ticket.html" class="title">IT Support System</a>
+        <div class="align-right">
+            <a class="active noEffect" href="/ticket.html">Ticket</a>
+            <a href="/booking.html">Booking</a>
 
-    <h1 id="status">IT Failure</h1>
-
-
-
-    <label>Location</label>
-    <input id="floor" type="number" min="1" max="6" />
-    <input id="room" type="number" min="1" max="22" />
+        </div>
+    </div>
+      
     
-    <legend>Problem(s):</legend>
-    <div id="problems"></div>
+    <div class="sect">
 
+        <h2 id="title"></h2>   
 
-    Description:<br>
-    <textarea id='description' rows='4' cols='50'></textarea><br>
-    <!-- Reset and Submit buttons -->
-    <input type='reset' value='RESET'>
-    <input type='submit' value='SUBMIT' id="submit">
+        <div class="textbox">
+
+            <input id="floor" type="number" placeholder="floor" min="1" max="6" />
+            <i class="material-icons">stairs_2</i>
+        </div>
+        <div class="textbox">
+    
+            <input id="room" type="number" placeholder="room" min="1" max="22" />
+            <i class="material-icons">door_front</i>
+        </div>
+    
+        <div class="textbox">
+    
+   
+            <select id="priority">  
+                <option value="1" selected>Priority</option>
+                <option value="1" >Low</option>
+                <option value="2">Medium</option>
+                <option value="3">High</option>
+
+            </select>
+
+            <i class="material-icons">low_priority</i>
+        </div>
+    
+        
+        <legend>Problems (s):</legend>
+        <div id="problems"></div>
+    
+    
+        <textarea id='description' rows='4' cols='50'></textarea><br>
+  
+        <input type='button' id='reset' value='RESET'>
+        <input type='button' value='SUBMIT' id="submit">
+    </div>
+    
+    <div class="sect">
+        <div class="searchBox">
+    
+            <input id="search" type="text" placeholder="search"/>
+            <i class="material-icons">search</i>
+        </div>
+
+        <select id="filter">  
+            <option>Filter by:</option>
+         
+
+        </select>
+
+    
+        <table id="tickets">
+            <tr>
+                <th>Req_ID</th>
+                <th>Room</th>
+                <th>Description</th>
+                <th>Problems</th>
+                <th>Priority</th>
+                <th>Created Timestamp</th>
+                <th>End Timestamp</th>
+                <th>Technician</th>
+                <th>Status</th>
+                <th>Survey</th>
+            </tr>
+            
+            
+          </table>
+    
+
+    </div>
+
+    <div id="survey" class="dialogBox">
+        <div class="header">
+            <div class="title">Survey</div>
+            <div class="close">
+                <i class="material-icons">close</i>
+            </div>
+        </div>
+        <div class="content">
+            <div class="container">
+                <label>Speed</label>
+                <div class="starContainer" id="rSpeed">
+    
+                    <input type="radio" name="rSpeed" value="1">
+                    <input type="radio" name="rSpeed" value="2">
+                    <input type="radio" name="rSpeed" value="3">
+                    <input type="radio" name="rSpeed" value="4">    
+                    <input type="radio" name="rSpeed" value="5">
+                   
+                </div>
+            </div>
+            <div class="container">
+                <label>Quality</label>
+                <div class="starContainer" id="rQuality">
+    
+                    <input type="radio" name="rQuality" value="1">
+                    <input type="radio" name="rQuality" value="2">
+                    <input type="radio" name="rQuality" value="3">
+                    <input type="radio" name="rQuality" value="4">    
+                    <input type="radio" name="rQuality" value="5">
+                   
+                </div>
+            </div>
+            <div class="container">
+                <label>Attitude</label>
+                <div class="starContainer", id="rAttitude">
+    
+                    <input type="radio" name="rAttitude" value="1">
+                    <input type="radio" name="rAttitude" value="2">
+                    <input type="radio" name="rAttitude" value="3">
+                    <input type="radio" name="rAttitude" value="4">    
+                    <input type="radio" name="rAttitude" value="5">
+                   
+                </div>
+            </div>
+            <br>
+            <label style="width: 100%;">Comments</label>
+            <textarea id="comment" rows="4" cols="50"></textarea>
+            <button id="submitSurvey">Submit</button>
+            
+            
+            
+        </div>
+        
+        
+        
+
+      
+ 
+      
+    </div>
+
+   
 
     <script type="module" src="/dist/client.js"></script>
 

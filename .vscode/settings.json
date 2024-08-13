@@ -18,8 +18,8 @@
       "previewLimit": 50,
       "server": "localhost",
       "driver": "PostgreSQL",
-      "connectString": "postgres://it_support_db_user:O5ZDEecrcXLNIRYEBsZShRm6B1F1RT5b@dpg-cojpa06d3nmc73bvql00-a.singapore-postgres.render.com/it_support_db",
-      "name": "it_support_db"
+      "connectString": "postgresql://itsupportdb_owner:9sdXx8lKyPDh@ep-shy-mountain-a1wdf29e.ap-southeast-1.aws.neon.tech/itsupportdb?sslmode=require",
+      "name": "it-support-db"
     }
   ]
 }

@@ -11,6 +11,10 @@ body {
   font-size: 16px;
   line-height: 1.5;
   color: #333;
+  background-color: #F9F9F9;
+}
+table, th, td {
+  border:1px solid black;
 }
 
 h1,
@@ -26,48 +30,499 @@ h6 {
   margin-bottom: 0.5rem;
 }
 
-#app {
-  padding: 1rem;
-}
 
 
 
-
-.app {
+.login {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
+  background-color: #ffffff;
+  padding: 50px 100px;
 }
 
 
-.app input[type="text"],
-.app input[type="password"]
+.login input[type="text"],
+.login input[type="password"]
 {
-  width: 100%;
+  width: 90%;
   padding: 10px;
   margin-bottom: 15px;
   border: 1px solid #000000;
 
 }
 
-.app input[type="button"] {
-  width: 105%;
+.login input[type="button"] {
+  width: 90%;
   padding: 10px;
-  background-color: #31ccec;
+  background-color: #08b2e3;
   border: none;
   color: #ffffff;
 
   cursor: pointer;
 }
 
-.app input[type="button"]:hover {
-  background-color: #1976d2;
+.ticket input[type="button"] {
+  display: inline-block; 
+  width: 20%;
+  padding: 10px;
+  background-color: #08b2e3;
+  border: none;
+  color: #ffffff;
+
+  cursor: pointer;
 }
 
 
 
-table, th, td {
-  border:1px solid black;
+input[type=number] { 
+  width: 100%; 
+  padding: 10px 40px; 
+  margin: 10px; 
+  border: 1px solid #ccc; 
+  box-sizing: border-box; 
+} 
+input[type="checkbox"] {
+  margin-left: 10px;
+}
+
+
+
+input:checked+label {
+  color: #08b2e3;
+}
+
+.textbox {
+  position: relative;
+  display: inline-block; 
+  width: 15%; 
+  margin-right: 10px;
+}
+
+
+.searchBox {
+  position: relative;
+  display: inline-block; 
+  width: 70%; 
+  margin-right: 10px;
+}
+
+.textbox i {
+  position: absolute;
+  left: 15px;
+  top: 17px;
+  color: gray;
+}
+
+.searchBox i{
+  position: absolute;
+  left: 15px;
+  top: 17px;
+  color: gray;
+}
+
+#search{
+  width: 100%; 
+  padding: 10px 40px; 
+  margin: 10px; 
+  border: 1px solid #ccc; 
+  box-sizing: border-box; 
+}
+
+#filter{
+  width: 20%; 
+  display: inline-block;
+}
+
+.sect{
+
+
+  width: 90%;
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1rem;
+  background-color: #ffffff;
+
+}
+
+
+
+
+
+textarea {
+  resize: none;
+}
+
+.navbar {
+  overflow: hidden;
+  width: 90%;
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1rem;
+  background-color: #ffffff;
+}
+.navbar a.title{
+  font-size: 30px;
+  font-weight: bold;
+}
+.navbar a {
+  color: black;
+  text-align: center;
+  text-decoration: none;
+  padding: 10px;
+  line-height: 25px;
+  float: left;
+}
+
+.navbar a:hover:not(.active):not(.title) {
+  background-color: #ddd;
+  color: black;
+}
+
+.navbar a.active {
+  background-color: #08b2e3;
+  color: white;
+}
+
+.align-right {
+  float: right;
+}
+
+
+
+
+.textbox select {
+ 
+  width: 100%;
+  padding: 10px 40px; 
+  margin: 10px; 
+  border: 1px solid #ccc; 
+  box-sizing: border-box; 
+}
+#filter{
+  width: 20%;
+  padding: 10px 40px; 
+  margin: 10px; 
+  border: 1px solid #ccc; 
+  box-sizing: border-box; 
+}
+#filterBtn{
+  display: flex;
+  float: right
+
+}
+
+
+#calendar {
+  width: 100%;
+
+
+}
+#calendar #header {
+  display: flex;
+  margin-bottom: 10px;
+  max-width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+
+  
+}
+
+#calendar #week {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+#calendar #week .day {
+  width: calc(100% / 7 - 17px);
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  border: #000000 1px solid;
+}
+#calendar #days {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+#calendar #days .day {
+  width: calc(100% / 7 - 17px);
+  aspect-ratio : 1 / 0.4;;
+  border: #000000 1px solid;
+  display: flex;
+  font-size: 16px;
+  font-weight: 400;
+
+}
+
+#calendar #days .day span{
+  margin-left: 5px;
+  display: block;
+  width: 20px;
+
+  
+}
+
+.dialogBox {
+  display: none;
+  z-index: 1; 
+  position: fixed;
+  inset: 0px;
+  background-color: #fefefe;
+  border: 1px solid #000000;
+  overflow: auto;
+
+
+}
+#bookingForm{
+  width: 35%;
+  height: 90%;
+  margin: auto;
+  padding: 10px;
+}
+
+.dialogBox .title{
+
+  font-size: 20px;
+  font-weight: bold;
+  display: inline;
+  margin: 0 auto;
+
+  
+}
+.close{
+  
+  float: right;
+  cursor: pointer;
+  
+
+
+}
+
+.dialogBox .header{
+
+  display: flex;
+  justify-content: space-between;
+  margin: 10px;
+
+}
+
+.dialogBox .content{
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+}
+
+.dialogBox .group{
+  display: grid;
+
+
+  
+}
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.dialogBox .container{
+  margin-bottom: 0px;
+}
+
+.roomBtn {
+  width: 35%;
+  height: 30px;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+img {
+  width: 100%;
+  height: auto;
+
+}
+
+.container .group{
+
+  background-color: #F9F9F9;
+  border: 1px solid black;
+  padding: 10px;
+  text-align: center;
+  width: 30%;
+  cursor: pointer;
+}
+.container .group:hover {
+
+  background-color: #00d2f2;
+  
+}
+.container .group.selected{
+
+  background-color: #47f441;
+}
+
+
+.bContainer{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-content: flex-end;
+
+  gap: 1px;
+}
+
+.day .box{
+  width: 15px;
+  height: 15px;
+  background-color: black;
+  margin: 1px;
+  position: relative;
+
+
+
+}
+
+.info {
+  background: #333333;
+  color: #ffffff;
+  cursor: pointer;
+  opacity: 0;
+  padding: 5px;
+  position: absolute;
+  text-align: left;
+  visibility: hidden;
+  left: -90px;
+  bottom: 115%;
+  height: 100px;
+  top: auto;
+  width: 200px;
+}
+
+.info:after{
+  border: 8px solid transparent;
+  border-top-color: #333333;
+  bottom: -15px;
+  content: '';
+  height: 0px;
+  left: -15px;
+  margin: 0 auto;
+  position: absolute;
+  right: 0;
+  width: 0px;
+}
+
+.box:hover .info {
+  opacity: 1;
+  visibility: visible;
+}
+
+.info .time {
+  font-weight: bold;
+  font-size: 0.9em;
+  width: fit-content;
+  display: inline;
+}
+
+.info .status {
+  font-weight: bold;
+  display: inline;
+  font-size: 0.9em;
+  text-decoration-color: white;
+  background-color: green;
+}
+
+.info .content {
+  font-size: 12px;
+
+}
+.info .b_id{
+  font-size: 12px;
+  display: block;
+}
+
+#filterBookings{
+  width: 20%;
+  height: 50%;
+  margin: auto;
+  padding: 10px;
+}
+
+#survey{
+  width: 20%;
+  height: 52%;
+  margin: auto;
+  padding: 10px;
+
+}
+
+#filterBookings .group{
+  display: flex;
+}
+
+#filterBookings .group .box{
+  width: 15px;
+  height: 15px;
+  background-color: black;
+  margin-top:5px;
+  margin-left: 2px;
+
+}
+
+
+td input{
+  width: 90% ;
+}
+
+td select{
+  width: 90% ;
+}
+
+
+
+.starContainer {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+
+.starContainer input[type="radio"] {
+  position: relative;
+  width: 20px;
+  height: 40px;
+  display: flex;
+  appearance: none;
+  overflow: hidden;
+  cursor: pointer;
+
+}
+.starContainer input[type="radio"]::before {
+  content: '⭐';
+  position: absolute;
+  filter:grayscale(1);
+
+}
+
+
+.starContainer input[type="radio"]:hover ~ input[type="radio"]::before,
+.starContainer input[type="radio"]:hover::before,
+.starContainer input[type="radio"]:checked ~ input[type="radio"]::before,
+.starContainer input[type="radio"]:checked::before {
+
+  filter:grayscale(0);
+}
+
+.starContainer input[type="radio"]:checked{
+  transform: scale(1.3);
 }

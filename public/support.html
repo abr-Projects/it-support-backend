@@ -5,24 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IT Failure Report Form</title>
     <link rel="stylesheet" href="/normalize.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="/dist/client.css" />
 </head>
 <body>
 
-    <h1>IT Support</h1>
+    <div class="navbar">
+        
+        <a href="/support.html" class="title">IT Support System</a>
+        <div class="align-right">
+            <a class="active noEffect" href="/support.html">Tickets</a>
+            <a href="/booking.html">Booking</a>
 
-    <table id="tickets">
-        <tr>
-          <th>Req_ID</th>
-          <th>Name</th>
-          <th>Room</th>
-          <th>Description</th>
-          <th>Problems</th>
-          <th>Accept</th>
-        </tr>
-        
-        
-      </table>
+        </div>
+    </div>
+    <div class="sect">
+      <div class="searchBox">
+  
+          <input id="search" type="text" placeholder="search"/>
+          <i class="material-icons">search</i>
+      </div>
+
+      <select id="filter">  
+          <option>Filter by:</option>
+       
+
+      </select>
+
+  
+      <table id="tickets">
+          <tr>
+              <th>Req_ID</th> 
+              <th>Staff</th>
+              <th>Room</th>
+              <th>Description</th>
+              <th>Problems</th>
+              <th>Priority</th>
+              <th>Created Timestamp</th>
+              <th>End Timestamp</th>
+              <th>Status</th>
+              <th>Action</th>
+
+              
+          </tr>
+          
+          
+    </table>
+  
+
+  </div>
+
 
 
     <script type="module" src="/dist/client.js"></script>

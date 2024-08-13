@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Failure Report Form</title>
+    <link rel="stylesheet" href="/normalize.css" />
+    <link rel="stylesheet" href="/dist/client.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body>
+    <div class="navbar">
+        
+        <a href="/ticket.html" class="title">Booking System</a>
+        <div class="align-right">
+            <a href="/ticket.html">Tickets</a>
+            <a class="active noEffect" href="/booking.html">Booking</a>
+
+        </div>
+    </div>
+      
+    
+    <div class="sect">
+
+        <h2 id="title"></h2>   
+        <input type='button' id='bRequest' value='Request Booking'>
+        <br>
+        <br>
+        <input type='button' id='calenderBtn' value='Calender View'>
+        <input type='button' id='mybookingsBtn' value='My Bookings'>
+        <input type='button' id='filterBtn' value='Filter Rooms'>
+
+
+        
+    </div>
+    
+    <div class="sect">
+        <div id="calendar">
+            <div id="header">
+            
+                <div class="btn" id="prev">
+                    <i class="material-icons">chevron_left</i>
+                </div>
+                <div id="month"></div>
+                <div class="btn" id="next">
+                    <i class="material-icons">chevron_right</i>
+                </div>
+            </div>
+    
+            <div id="week">
+                <div class="day">Sun</div>
+                <div class="day">Mon</div>
+                <div class="day">Tue</div>
+                <div class="day">Wed</div>
+                <div class="day">Thu</div>
+                <div class="day">Fri</div>
+                <div class="day">Sat</div>
+            </div>
+            <div id="days">
+                
+            </div>
+        </div>
+    </div>
+   
+       
+
+    <div id="bookingForm" class="dialogBox">
+        <div class="header">
+            <div class="title">Request Booking</div>
+            <div class="close">
+                <i class="material-icons">close</i>
+            </div>
+        </div>
+        <div class="content">
+            <div class="group">
+                <label>Booking Date</label>
+                <input id="bDate" type="date"/>
+            </div>
+            <div class="group">
+                <label>Start Time</label>
+                <input id="sTime" type="time"/>
+            </div>
+            <div class="group">
+                <label>End Time</label>
+                <input id="eTime" type="time"/>
+            </div>
+           
+  
+            
+        </div>
+        
+        <div class="group">
+            <label>Event Name</label>
+            <input id="eName" type="text" placeholder="Event Name"/>
+        </div>
+        <div class="group">
+            <label>Event Description</label>
+            <input id="eDesc" type="text" placeholder="Event Description"/>
+        </div>
+        <div class="group">
+            <label>Remarks</label>
+            <input id="remarks" type="text" placeholder="Remarks"/>
+        </div>
+        <div id="title">Rooms</div>
+        <br>
+        <div class="container">
+            
+            <button class="roomBtn">Art Rooms</button>
+            <button class="roomBtn">Music Rooms</button>
+            <button class="roomBtn">Computer Rooms</button>
+            <button class="roomBtn">Meeting Rooms</button>
+            <button class="roomBtn">Sport Playgrounds</button>
+            <button class="roomBtn">Hall</button>
+        </div>
+        <div id="facilitiesContainer" class="container">
+          
+        
+
+        </div>
+        <input type='button' id='submit' value='Submit'>
+        
+
+      
+ 
+      
+    </div>
+
+    <div id="filterBookings" class="dialogBox">
+        <div class="header">
+            <div class="title">Request Booking</div>
+            <div class="close">
+                <i class="material-icons">close</i>
+            </div>
+        </div>
+        <div class="content">
+            
+            
+        </div>
+        
+        
+        
+
+      
+ 
+      
+    </div>
+   
+
+    <script type="module" src="/dist/client.js"></script>
+
+ </body>
+ </html>
