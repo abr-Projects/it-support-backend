@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Failure Report Form</title>
+    <link rel="stylesheet" href="/normalize.css" />
+    <link rel="stylesheet" href="/dist/client.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body>
+    <div class="navbar">
+        
+        <a href="/admin/ticket.html" class="title">Booking System</a>
+        <div class="align-right">
+            <a href="/admin/ticket.html">Tickets</a>
+            <a href="/admin/booking.html">Booking</a>
+            <a href="/admin/equipment.html">Equipment</a>
+            <a class="active noEffect"href="/admin/user.html">User</a>
+            <a href="/profile.html">Profile</a>
+            <a id="logout">Logout</a>
+        </div>
+    </div>
+      
+    
+    <div id="staff_info" class="sect">
+        <div class="container">
+            <h2 class="title">Modify and view staff</h2>
+            <div class="cGroup">
+                <h2>Name:</h2>
+                <select class="name"></select>
+                
+            </div>
+            <div class="cGroup">
+                <h2>Role:</h2>
+                <select class="role"></select>
+                
+            </div>
+
+            <div class="cGroup">
+                <h2>Email:</h2>
+                <input type="email" class="email"/>
+            </div>
+
+            <div class="cGroup">
+                <h2>Phone:</h2>
+                <input type="text" class="phone"/>
+            </div>
+
+            <div class="cGroup">
+                <h2>Password:</h2>
+                <input type="password" class="password"/>
+            </div>
+            <button class="Edit">Edit Profile</button>
+
+        </div>  
+        <div class="container">
+            <h2 class="title">Add Staff</h1>
+            <div class="cGroup">
+                <h2>First Name:</h2>
+                <input type="text" class="fname"/>
+            </div>
+            <div class="cGroup">
+                <h2>Last Name:</h2>
+                <input type="text" class="lname"/>
+            </div>
+            <div class="cGroup">
+                <h2>Gender:</h2>
+                <input type="radio" id="male" name="gender" value="Male">
+                <label for="male">Male</label>
+                <input type="radio" id="female" name="gender" value="Female">
+                <label for="female">Female</label>
+            </div>
+            
+            <div class="cGroup">
+                <h2>Role:</h2>
+                <select class="role"></select>
+                
+            </div>
+            <div class="cGroup">
+                <h2>Email:</h2>
+                <input type="email" class="email"/>
+            </div>
+            <div class="cGroup">
+                <h2>Phone:</h2>
+                <input type="text" class="phone"/>
+            </div>
+            <div class="cGroup">
+                <h2>Password:</h2>
+                <input type="password" class="password"/>
+            </div>
+            <button class="Add">Add Staff</button>
+
+        </div>  
+        
+      
+    </div>
+
+
+    <script type="module" src="/dist/client.js"></script>
+
+ </body>
+ </html>

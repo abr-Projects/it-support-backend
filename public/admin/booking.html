@@ -11,11 +11,12 @@
 <body>
     <div class="navbar">
         
-        <a href="/ticket.html" class="title">Booking System</a>
+        <a href="/admin/ticket.html" class="title">Booking System</a>
         <div class="align-right">
-            <a href="/ticket.html">Tickets</a>
-            <a class="active noEffect" href="/booking.html">Booking</a>
-            <a href="/equipment.html">Equipment</a>
+            <a href="/admin/ticket.html">Tickets</a>
+            <a class="active noEffect" href="/admin/booking.html">Booking</a>
+            <a href="/admin/equipment.html">Equipment</a>
+            <a href="/admin/user.html">User</a>
             <a href="/profile.html">Profile</a>
             <a id="logout">Logout</a>
         </div>
@@ -28,8 +29,8 @@
         <input type='button' id='bRequest' value='Request Booking'>
         <br>
         <br>
-        <input type='button' id='calenderBtn' value='Calender View'>
-        <input type='button' id='mybookingsBtn' value='My Bookings'>
+     
+        <input type='button' id='statBtn' value='Statistics'>
         <input type='button' id='filterBtn' value='Filter Rooms'>
 
 
@@ -103,7 +104,7 @@
             <label>Remarks</label>
             <input id="remarks" type="text" placeholder="Remarks"/>
         </div>
-        <div id="title">Rooms</div>
+        <div class="title">Rooms</div>
         <br>
         <div class="container">
             
@@ -143,6 +144,36 @@
         
 
       
+ 
+      
+    </div>
+   
+    <div id="stats" class="dialogBox">
+        <div class="header">
+            <h1>Most booked facility    </h1>
+            <div class="close">
+                <i class="material-icons">close</i>
+            </div>
+        </div>
+        <label for="month">Select Month:</label>
+        <select id="monthSelector">
+            <option value="1">January</option>
+            <option value="2">February</option>
+            <option value="3">March</option>
+            <option value="4">April</option>
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+        </select>
+
+        <canvas id="facilityChart" width="width:100%" height="100px"></canvas>
+
+        <canvas id="sFacilityChart" width="width:100%;" height="100px"></canvas>
  
       
     </div>

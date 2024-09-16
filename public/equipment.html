@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Failure Report Form</title>
+    <link rel="stylesheet" href="/normalize.css" />
+    <link rel="stylesheet" href="/dist/client.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body>
+    <div class="navbar">
+        
+        <a href="/ticket.html" class="title">Booking System</a>
+        <div class="align-right">
+            <a href="/ticket.html">Tickets</a>
+            <a  href="/booking.html">Booking</a>
+            <a class="active noEffect"href="/equipment.html">Equipment</a>
+            <a href="/profile.html">Profile</a>
+            <a id="logout">Logout</a>
+        </div>
+    </div>
+      
+    
+    <div class="sect">
+
+        <h2 id="title"></h2>   
+        <input type='button' id='eRequest' value='Rent Equipment'>
+
+        <input type='button' id='filterBtn' value='Filter Rental'>
+
+
+        
+    </div>
+    
+    <div class="sect">
+        <div id="calendar">
+            <div id="header">
+            
+                <div class="btn" id="prev">
+                    <i class="material-icons">chevron_left</i>
+                </div>
+                <div id="month"></div>
+                <div class="btn" id="next">
+                    <i class="material-icons">chevron_right</i>
+                </div>
+            </div>
+    
+            <div id="week">
+                <div class="day">Sun</div>
+                <div class="day">Mon</div>
+                <div class="day">Tue</div>
+                <div class="day">Wed</div>
+                <div class="day">Thu</div>
+                <div class="day">Fri</div>
+                <div class="day">Sat</div>
+            </div>
+            <div id="days">
+                
+            </div>
+        </div>
+    </div>
+   
+       
+
+    <div id="rentingForm" class="dialogBox">
+        <div class="header">
+            <div class="title">Request Equipment</div>
+            <div class="close">
+                <i class="material-icons">close</i>
+            </div>
+        </div>
+        <div class="content">
+            <div class="group">
+                <label>Rent Date</label>
+                <input id="rDate" type="date"/>
+            </div>
+            <div class="group">
+                <label>Planned Return Date</label>
+                <input id="dDate" type="date"/>
+            </div>
+            
+        </div>
+
+        <div class="group">
+            <label>Purpose</label>
+            <input id="desc" type="text" placeholder="Purpose"/>
+        </div>
+        
+        <div id="title">Equipment</div>
+        <br>
+        <div class="container">
+            <div class="group">
+                <label>Microhpone</label>
+                <img src="assets/microphone.jpg">
+                <div> 
+                    
+                    <input category="microphone" class="amount" type="number">
+                    <label>Amount:</label>
+                </div>
+
+            
+            </div>
+            <div class="group">
+                <label>Ipad</label>
+                <img src="assets/ipad.jpg">
+                <div> 
+                    
+                    <input category ="ipad" class="amount" type="number">
+                    <label>Amount:</label>
+                </div>
+            </div>
+            
+            <div class="group">
+                <label>laser pointer</label>
+                <img src="assets/laser_pointer.jpg">
+                <div> 
+                    
+                    <input category="laserpointer" class="amount" type="number">
+                    <label>Amount:</label>
+                </div>
+            </div>
+
+            <div class="group">
+                <label>video camera</label>
+                <img src="assets/video_camera.jpg">
+                <div> 
+                    
+                    <input category="videocamera" class="amount" type="number">
+                    <label>Amount:</label>
+                </div>
+            </div>
+        </div>
+        
+        <input type='button' id='submit' value='Submit'>
+
+      
+ 
+      
+    </div>
+
+    <div id="ePanel" class="dialogBox">
+        <div class="header">
+            <div class="title">Approve equipment rental</div>
+            <div class="close">
+                <i class="material-icons">close</i>
+            </div>
+        </div>
+        <label>Rent purpose:</label>
+        <br>
+        <textarea class="purpose"></textarea>
+        <br>
+        <button class="rJudgement" id="approveRental">Approve</button>
+        <button class="rJudgement" id="rejectRental">Reject</button>
+    </div>
+    <div id="filterRentals" class="dialogBox">
+        <div class="header">
+            <div class="title">Filter Rentals</div>
+            <div class="close">
+                <i class="material-icons">close</i>
+            </div>
+        </div>
+        <div class="content">
+            
+            
+        </div>
+        
+        
+        
+
+      
+ 
+      
+    </div>
+   
+
+       
+
+ 
+        
+        
+        
+
+      
+ 
+      
+     
+
+    <script type="module" src="/dist/client.js"></script>
+
+ </body>
+ </html>
