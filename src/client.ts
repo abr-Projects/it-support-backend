@@ -172,7 +172,8 @@ const ws = new PartySocket({
   host: PARTYKIT_HOST,
   room: "global",
   id:  localStorage.getItem("conn_id") !
- 
+  
+  
 
 });
 
@@ -300,7 +301,10 @@ window.document.addEventListener("DOMContentLoaded",function(){
 
       const id = (<HTMLInputElement>document.getElementById("staffId")).value
       const password = (<HTMLInputElement>document.getElementById("password")).value
-    
+      if(isNaN(parseInt(id))){
+        alert("Please enter a valid ID")
+        return
+      }
         PartySocket.fetch(
           {
             host: PARTYKIT_HOST,
@@ -1511,6 +1515,7 @@ window.document.addEventListener("DOMContentLoaded",function(){
         if (localStorage.getItem("Access") == "2" && (document.getElementById("submit")! as HTMLInputElement).value == "Approve"){
             const bApprove = {
               b_id: (document.getElementById("submit")! as HTMLInputElement).getAttribute("b_id"),
+              token: localStorage.getItem("token"),
               type: "updateB"
             }
             ws.send(JSON.stringify(bApprove))
@@ -1550,7 +1555,7 @@ window.document.addEventListener("DOMContentLoaded",function(){
             ws.send(JSON.stringify(ubReq))
           }
           else{
-
+            console.log(parseInt(sTime.value!.split(":")[0]) , parseInt(eTime.value!.split(":")[0] ) )
             if(bDate.value == "" || sTime.value == "" || eTime.value == "" || eName.value == "" || eDesc.value == "" || remarks.value == ""  ||facility == null){
               alert("Please fill in all fields");
               return;
@@ -1571,8 +1576,7 @@ window.document.addEventListener("DOMContentLoaded",function(){
               alert("Booking time must be at least 15 minutes");
               return;
             }
-            console.log(sTime.value)
-            if((parseInt(sTime.value!.split(":")[0]) < 8 || parseInt(sTime.value!.split(":")[0]) >18  )||(parseInt(eTime.value!.split(":")[0]) < 8 || parseInt(eTime.value!.split(":")[0]) >18  ) ){
+            if (sTime.value < "08:00" || eTime.value > "18:00"){ 
               alert("Booking time must be between 8am and 6pm");
               return;
             }
@@ -1932,6 +1936,15 @@ window.document.addEventListener("DOMContentLoaded",function(){
         console.log(allEquipments)
         renderCalendar();
       })
+      const microphone = document.querySelector('#rentingForm .container .group:nth-child(1) .amount') as HTMLInputElement;
+      const ipad = document.querySelector('#rentingForm .container .group:nth-child(2) .amount') as HTMLInputElement;
+      const laserpointer = document.querySelector('#rentingForm .container .group:nth-child(3) .amount') as HTMLInputElement;
+      const videocamera = document.querySelector('#rentingForm .container .group:nth-child(4) .amount') as HTMLInputElement;
+
+      microphone.addEventListener("keydown", preventInput)
+      ipad.addEventListener("keydown", preventInput)
+      laserpointer.addEventListener("keydown", preventInput)
+      videocamera.addEventListener("keydown", preventInput)
   
     
     document.getElementById('submit')!.addEventListener('click', () => {
@@ -1940,11 +1953,12 @@ window.document.addEventListener("DOMContentLoaded",function(){
       const dDate = (document.getElementById("dDate") as HTMLInputElement);
       const purpose = (document.getElementById("desc") as HTMLInputElement).value;
       
-      const microphone = parseInt((document.querySelector('#rentingForm .container .group:nth-child(1) .amount') as HTMLInputElement).value) || 0;
-      const ipad = parseInt((document.querySelector('#rentingForm .container .group:nth-child(2) .amount') as HTMLInputElement).value) || 0;
-      const laserpointer = parseInt((document.querySelector('#rentingForm .container .group:nth-child(3) .amount') as HTMLInputElement).value) || 0;
-      const videocamera = parseInt((document.querySelector('#rentingForm .container .group:nth-child(4) .amount') as HTMLInputElement).value) || 0;
-      const hasEquipment = [microphone, ipad, laserpointer, videocamera].some(v => v > 0);
+      const microphoneValue = parseInt(microphone?.value) || 0;
+      const ipadValue = parseInt(ipad?.value) || 0;
+      const laserpointerValue = parseInt(laserpointer?.value) || 0;
+      const videocameraValue = parseInt(videocamera?.value) || 0;
+
+      const hasEquipment = [microphoneValue, ipadValue, laserpointerValue, videocameraValue].some(v => v > 0);
 
       if(!rDate || !dDate || !purpose || !hasEquipment){
         alert("Missing Fields")
@@ -1957,7 +1971,16 @@ window.document.addEventListener("DOMContentLoaded",function(){
               
       }
       if(rDate > dDate){
-        alert("Due Date cannot be before Rental Date")
+        alert("Return Date cannot be before Rental Date")
+        return
+      }
+      if (
+        (microphoneValue < parseInt(microphone.min) || microphoneValue > parseInt(microphone.max)) ||
+        (ipadValue < parseInt(ipad.min) || ipadValue > parseInt(ipad.max)) ||
+        (laserpointerValue < parseInt(laserpointer.min) || laserpointerValue > parseInt(laserpointer.max)) ||
+        (videocameraValue < parseInt(videocamera.min) || videocameraValue > parseInt(videocamera.max))
+      ) {
+        alert("Invalid amount of equipment");
         return
       }
       const eReq = {
@@ -1966,10 +1989,10 @@ window.document.addEventListener("DOMContentLoaded",function(){
         ddate: dDate.value,
         purpose: purpose,
         equipment:[
-          {name: 'microphone', amount: microphone}, 
-          {name: 'ipad', amount: ipad}, 
-          {name: 'laserpointer', amount: laserpointer}, 
-          {name: 'videocamera', amount: videocamera}
+          {name: 'microphone', amount: microphoneValue}, 
+          {name: 'ipad', amount: ipadValue}, 
+          {name: 'laserpointer', amount:  laserpointerValue}, 
+          {name: 'videocamera', amount: videocameraValue}
         ],
         name:localStorage.getItem("Name")!,
         rstatus:"PENDING"
@@ -3102,4 +3125,8 @@ ws.addEventListener("message", (message : any) => {
   
   
 
+});
+
+ws.addEventListener("error", () => {
+  console.log("error");
 });

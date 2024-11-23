@@ -19,78 +19,71 @@ export default class Server implements Party.Server {
   }
   async onMessage(message: string, sender: Party.Connection) {
     const req = await JSON.parse(message);
-
-    if (req.type == "update") {
-      ///update ticket
-      let infoObj: any;
-      if (await jwt.verify(req.token, SECRET)) {
-        infoObj = await jwt.decode(req.token);
-      }
-
-      const data: any = await db.execute(
-        sql.raw(
-          `SELECT conn_id from request WHERE request_id = '${req.req_id}'`
-        )
-      );
-      let message = {};
-      if (req.update == "accept") {
-        message = {
-          type: "updated",
-          update: "accepted",
-          req_id: req.req_id,
-          name: req.name,
-        };
-        await db.execute(
+    let infoObj: any;
+    if (await jwt.verify(req.token, SECRET)) {
+      infoObj = await jwt.decode(req.token);
+      if (req.type == "update") {
+        ///update ticket
+        
+  
+        const data: any = await db.execute(
           sql.raw(
-            `UPDATE request SET rStatus = 'ACCEPTED',technician_id = ${infoObj.payload.id} WHERE request_id = '${req.req_id}'`
+            `SELECT conn_id from request WHERE request_id = '${req.req_id}'`
           )
         );
-      } else if (req.update == "complete") {
-        message = {
-          type: "updated",
-          update: "completed",
-          req_id: req.req_id,
-          name: req.name,
-        };
-        await db.execute(
-          sql.raw(
-            `UPDATE request SET end_ts = NOW(), rStatus = 'COMPLETED' WHERE request_id = '${req.req_id}'`
-          )
-        );
-      }
-      let found = false;
-      for (const conn of this.room.getConnections()) {
-        if (conn.id.toString() == data[0].conn_id.toString()) {
-          found = true;
-
-          conn.send(JSON.stringify(message));
-          break;
+        let message = {};
+        if (req.update == "accept") {
+          message = {
+            type: "updated",
+            update: "accepted",
+            req_id: req.req_id,
+            name: req.name,
+          };
+          await db.execute(
+            sql.raw(
+              `UPDATE request SET rStatus = 'ACCEPTED',technician_id = ${infoObj.payload.id} WHERE request_id = '${req.req_id}'`
+            )
+          );
+        } else if (req.update == "complete") {
+          message = {
+            type: "updated",
+            update: "completed",
+            req_id: req.req_id,
+            name: req.name,
+          };
+          await db.execute(
+            sql.raw(
+              `UPDATE request SET end_ts = NOW(), rStatus = 'COMPLETED' WHERE request_id = '${req.req_id}'`
+            )
+          );
+        }
+        let found = false;
+        for (const conn of this.room.getConnections()) {
+          if (conn.id.toString() == data[0].conn_id.toString()) {
+            found = true;
+  
+            conn.send(JSON.stringify(message));
+            break;
+          }
+        }
+        if (found == false) {
+          allnotsentRequests.push({ ...req, staff_ID: infoObj.payload.id });
         }
       }
-      if (found == false) {
-        allnotsentRequests.push({ ...req, staff_ID: infoObj.payload.id });
-      }
-    }
-
-    if (req.type == "equipment") {
-      if (await jwt.verify(req.token, SECRET)) {
-        let infoObj: any;
-        if (await jwt.verify(req.token, SECRET)) {
-          infoObj = await jwt.decode(req.token);
-        }
-
-        console.log()
-
+  
+      if (req.type == "equipment") {
+        
+  
         await db.execute(
           sql.raw(`INSERT INTO rental (rental_id, staff_id, rental_date, due_date, purpose) 
                           VALUES ('${req.r_id}', '${infoObj.payload.id}', TO_DATE('${req.rdate}', 'YYYY-MM-DD'), TO_DATE('${req.ddate}', 'YYYY-MM-DD'), '${req.purpose}')`)
         );
-
+  
         await Promise.all(
           req.equipment.map(async (equip: any) => {
-
+  
             if (equip.amount > 0) {
-
+  
               let data = await db.execute(
                 sql.raw(`SELECT e.equipment_id
               FROM equipment e 
@@ -101,7 +94,7 @@ export default class Server implements Party.Server {
               HAVING MAX(r.due_date) < TO_DATE('${req.rdate}', 'YYYY-MM-DD') OR MAX(r.due_date) IS NULL
               LIMIT ${equip.amount};`)
               );
-
+  
         
               data.forEach(async (item: any) => {
                 await db.execute(
@@ -113,18 +106,18 @@ export default class Server implements Party.Server {
             }
           })
         );
-
+  
         this.room.broadcast(JSON.stringify(req));
+        
       }
-    }
-    if (req.type == "ticket") {
-      //send ticket
-      if (await jwt.verify(req.token, SECRET)) {
-        const info: any = await jwt.decode(req.token);
-
+      if (req.type == "ticket") {
+        //send ticket
+      
+       
+  
         await db.execute(
           sql.raw(`INSERT INTO request (request_id, staff_id, technician_id, dsc, rStatus, classroom, conn_id,created_ts,priority) 
-        VALUES ('${req.req_id}', '${info.payload.id.toString()}', 0, '${req.desc
+        VALUES ('${req.req_id}', '${infoObj.payload.id.toString()}', 0, '${req.desc
             }', 'PENDING', '${req.room}', '${sender.id}', NOW(),${req.priority})`)
         );
         await Promise.all(
@@ -137,27 +130,27 @@ export default class Server implements Party.Server {
             );
           })
         );
-
+  
         const onlyTechnicians = Array.from(await this.room.storage.list())
           .filter(([key, value]) => value != "2")
           .map(([key]) => key);
         const rK: string = "token";
-
+  
         const sTicket = { ...req, rStatus: "PENDING" };
-
+  
         delete sTicket[rK];
-
+  
         this.room.broadcast(JSON.stringify(sTicket), onlyTechnicians);
+        
       }
-    }
-    if (req.type == "booking") {
-      //send booking
-      if (await jwt.verify(req.token, SECRET)) {
-        const info: any = await jwt.decode(req.token);
+      if (req.type == "booking") {
+        //send booking
+     
+       
         const data = await db.execute(
           sql.raw(`INSERT INTO Booking (booking_id,facility_id, staff_id, event_name, event_description, remarks, start_time, end_time, bStatus)
           SELECT ${req.b_id.toString()},${req.facility
-            }, ${info.payload.id.toString()}, '${req.eName}', '${req.eDesc}', '${req.remarks
+            }, ${infoObj.payload.id.toString()}, '${req.eName}', '${req.eDesc}', '${req.remarks
             }',  to_timestamp('${req.bDate + " " + req.sTime
             }', 'YYYY-MM-DD HH24:MI'), to_timestamp('${req.bDate + " " + req.eTime
             }', 'YYYY-MM-DD HH24:MI'), 'PENDING'
@@ -180,47 +173,47 @@ export default class Server implements Party.Server {
           );
         } else {
           const rK: string = "token";
-
+  
           const sBooking = { ...req, bStatus: "PENDING" };
-
+  
           delete sBooking[rK];
           this.room.broadcast(JSON.stringify(sBooking));
         }
+        
       }
-    }
-    if (req.type == "updateB") {
-      //update booking
-      const data: any = await db.execute(
-        sql.raw(
-          `UPDATE booking SET bstatus = 'APPROVED' WHERE booking_id = '${req.b_id}'`
-        )
-      );
-      this.room.broadcast(JSON.stringify({ ...req, bStatus: "APPROVED" }));
-    }
-    if (req.type == "updateTicket") {
-      if (await jwt.verify(req.token, SECRET)) {
-        const info: any = await jwt.decode(req.token);
-        if (info.payload.access != "1") {
+      if (req.type == "updateB") {
+        //update booking
+        const data: any = await db.execute(
+          sql.raw(
+            `UPDATE booking SET bstatus = 'APPROVED' WHERE booking_id = '${req.b_id}'`
+          )
+        );
+        this.room.broadcast(JSON.stringify({ ...req, bStatus: "APPROVED" }));
+      }
+      if (req.type == "updateTicket") {
+        
+      
+        if (infoObj.payload.access != "1") {
           throw new Error("You don't have access to this");
         }
-
+  
         let created_ts = moment(req.created_ts, "MM/DD/YYYY, h:mm:ss A").format(
           "YYYY-MM-DD HH:mm:ss"
         );
         let end_ts = moment(req.end_ts, "MM/DD/YYYY, h:mm:ss A").format(
           "YYYY-MM-DD HH:mm:ss"
         );
-
+  
         let created_ts_query =
           created_ts == "Invalid date"
             ? `NULL`
             : `to_timestamp('${created_ts}', 'YYYY-MM-DD HH24:MI:SS')`;
-
+  
         let end_ts_query =
           end_ts == "Invalid date"
             ? `NULL`
             : `to_timestamp('${end_ts}', 'YYYY-MM-DD HH24:MI:SS')`;
-
+  
         const data = await db.execute(
           sql.raw(
             `UPDATE request SET classroom = '${req.room}', dsc = '${req.desc}', priority = '${req.priority}', created_ts = ${created_ts_query}, end_ts = ${end_ts_query}, technician_id = '${req.technician_el}', rstatus = '${req.rstatus}' WHERE request_id = '${req.req_id}'`
@@ -237,67 +230,66 @@ export default class Server implements Party.Server {
               );
             })
         );
-
+  
         const rK: string = "token";
         delete req[rK];
-
+  
         this.room.broadcast(JSON.stringify(req));
+        
       }
-    }
-    if (req.type == "updateBooking") {
-      if (await jwt.verify(req.token, SECRET)) {
-        const info: any = await jwt.decode(req.token);
-        if (info.payload.access != "1") {
+      if (req.type == "updateBooking") {
+        
+    
+        if (infoObj.payload.access != "1") {
           throw new Error("You don't have access to this");
         }
-
+  
         await db.execute(
           sql.raw(
             `UPDATE booking SET start_time = to_timestamp('${req.bDate} ${req.sTime}', 'YYYY-MM-DD HH24:MI:SS'), end_time = to_timestamp('${req.bDate} ${req.eTime}', 'YYYY-MM-DD HH24:MI:SS'), event_name = '${req.eName}', event_description = '${req.eDesc}', remarks = '${req.remarks}', facility_id = ${req.facility}, bstatus = '${req.bStatus}' WHERE booking_id = '${req.b_id}';`
           )
         );
-
+  
         const rK: string = "token";
         delete req[rK];
-
+  
         this.room.broadcast(JSON.stringify(req));
+        
       }
-    }
-    if (req.type == "updateEStatus") {
-      if (await jwt.verify(req.token, SECRET)) {
-        const info: any = await jwt.decode(req.token);
-        if (info.payload.access == "2") {
-          let status = "Rejected";
-          if (req.status == "Approve") {
-            status = "Approved";
+      if (req.type == "updateEStatus") {
+        
+          if (infoObj.payload.access == "2") {
+            let status = "Rejected";
+            if (req.status == "Approve") {
+              status = "Approved";
+            }
+            if (req.status == "Returned") {
+              status = "Returned";
+            }
+            await db.execute(
+              sql.raw(
+                `UPDATE rental SET rstatus = '${status}' WHERE rental_id = '${req.r_id}';`
+              )
+            );
           }
-          if (req.status == "Returned") {
-            status = "Returned";
-          }
-          await db.execute(
-            sql.raw(
-              `UPDATE rental SET rstatus = '${status}' WHERE rental_id = '${req.r_id}';`
-            )
-          );
-        }
-        this.room.broadcast(JSON.stringify(req));
+          this.room.broadcast(JSON.stringify(req));
+        
       }
-    }
-
-    if (req.type == "catchup") {
-      if (await jwt.verify(req.token, SECRET)) {
-        const info: any = await jwt.decode(req.token);
-
+  
+      if (req.type == "catchup") {
         if (allnotsentRequests.length > 0) {
           allnotsentRequests.forEach((req) => {
-            if ((req as any).staff_ID == info.payload.id) {
+            if ((req as any).staff_ID == infoObj.payload.id) {
               sender.send(JSON.stringify(req));
               allnotsentRequests.splice(allnotsentRequests.indexOf(req), 1);
             }
           });
         }
+        
       }
     }
+
+    
   }
 
   async onRequest(req: Party.Request) {
@@ -305,8 +297,9 @@ export default class Server implements Party.Server {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
+     
     };
-
+    
     if (req.method === "OPTIONS") {
       return new Response(null, { headers });
     }
@@ -394,12 +387,13 @@ export default class Server implements Party.Server {
 
       if (r.type == "login") {
         const lR: LoginRequest = r as LoginRequest;
-
+        console.log(lR);
         const data = await db.execute(
           sql.raw(
             `SELECT passw ,access,first_name,last_name,id FROM staff WHERE id = ${lR.id.toString()};`
           )
         );
+        
         if (data.length == 0) {
           return new Response(JSON.stringify({ state: "User not found" }), {
             status: 404,
@@ -416,8 +410,10 @@ export default class Server implements Party.Server {
               id: lR.id,
               password: lR.password,
               access: data[0].access,
+              exp: Math.floor(Date.now() / 1000) + 60*0.5
             },
             SECRET
+            
           );
 
           const name = data[0].first_name + " " + data[0].last_name;

@@ -169,4 +169,4 @@ dist
 .partykit
 .DS_Store
 
-it_support_db.session.sql
+it-support-db.session.sql
