@@ -11,17 +11,56 @@ const SECRET = process.env.SECRET as string;
 const client = postgres(connectionString);
 const db = drizzle(client);
 let allnotsentRequests: {}[] = [];
+const users = new Map<string, string>();
+const connections = new Map<string, any>();
+const tokenValidity = 10;
 export default class Server implements Party.Server {
   constructor(readonly room: Party.Room) { }
   convertTime(time: number) {
     const date = new Date(time);
     return date.toLocaleTimeString();
   }
+  isTokenExpiringSoon(expirationTime : number) {
+    const currentTime = Math.floor(Date.now() / 1000);
+    return expirationTime - currentTime < (60*tokenValidity)/4;
+  }
+  async refreshToken(payload: any) {
+    const infoObj = {
+      id: payload.id,
+      password: payload.password,
+      access: payload.access,
+      exp: Math.floor(Date.now() / 1000) + 60*tokenValidity
+    }
+    const token = await jwt.sign(
+      infoObj,
+      SECRET
+      
+    );
+    connections.set(users.get(payload.id)!, infoObj);
+    for (const conn of this.room.getConnections()) {
+      if (conn.id.toString() == users.get(payload.id)!.toString()) {
+      
+
+        conn.send(JSON.stringify({type: "newToken", token: token }));
+        break;
+      }
+    }
+
+  
+
+  }
   async onMessage(message: string, sender: Party.Connection) {
     const req = await JSON.parse(message);
     let infoObj: any;
     if (await jwt.verify(req.token, SECRET)) {
       infoObj = await jwt.decode(req.token);
+
+      users.set(infoObj.payload.id, sender.id);
+      connections.set(sender.id, infoObj.payload);
+      
+      if (this.isTokenExpiringSoon(infoObj.payload.exp)) {
+        this.refreshToken(infoObj.payload);
+      }
       if (req.type == "update") {
         ///update ticket
         
@@ -277,6 +316,7 @@ export default class Server implements Party.Server {
       }
   
       if (req.type == "catchup") {
+        
         if (allnotsentRequests.length > 0) {
           allnotsentRequests.forEach((req) => {
             if ((req as any).staff_ID == infoObj.payload.id) {
@@ -410,7 +450,7 @@ export default class Server implements Party.Server {
               id: lR.id,
               password: lR.password,
               access: data[0].access,
-              exp: Math.floor(Date.now() / 1000) + 60*0.5
+              exp: Math.floor(Date.now() / 1000) + 60*tokenValidity
             },
             SECRET
             
@@ -532,7 +572,7 @@ ORDER BY
             WHERE r.staff_id = ${infoObj.payload.id}
             GROUP BY r.request_id, r.staff_id, s.first_name, s.last_name, r.dsc, r.classroom, t.first_name, t.last_name`)
             );
-          } else if (r.type == "tickets") {
+          }  if (r.type == "tickets") {
             if (infoObj.payload.access != "2") {
               return new Response(JSON.stringify({ state: "Access denied" }), {
                 status: 401,
@@ -547,12 +587,12 @@ ORDER BY
             WHERE r.technician_id = ${infoObj.payload.id} OR r.technician_id = 0
             GROUP BY r.request_id, r.staff_id, r.technician_id , s.first_name, s.last_name, r.dsc, r.classroom`)
             );
-          } else if (r.type == "bookings") {
+          }  if (r.type == "bookings") {
             data = await db.execute(
               sql.raw(`SELECT s.id, booking_id, s.first_name, s.last_name, f.facility_id, facilityType,event_name,event_description,remarks,start_time,end_time,bstatus FROM booking b, facility f,staff s 
               WHERE b.facility_id = f.facility_id AND b.staff_id = s.id`)
             );
-          } else if (r.type == "survey") {
+          }  if (r.type == "survey") {
             const sR: surveyRequest = r as surveyRequest;
 
             data = await db.execute(
@@ -566,7 +606,7 @@ ORDER BY
                 headers,
               });
             }
-          } else if (r.type == "aTickets") {
+          }  if (r.type == "aTickets") {
             if (infoObj.payload.access != "1") {
               return new Response(JSON.stringify({ state: "Access denied" }), {
                 status: 401,
@@ -587,7 +627,7 @@ ORDER BY
               )
             );
             data = { tickets: tickets, staff: staff };
-          } else if (r.type == "aStaff") {
+          }  if (r.type == "aStaff") {
             if (infoObj.payload.access != "1") {
               return new Response(JSON.stringify({ state: "Access denied" }), {
                 status: 401,
@@ -600,7 +640,7 @@ ORDER BY
                 `SELECT id, access, concat(first_name,' ',last_name) as name FROM staff`
               )
             );
-          } else if (r.type == "surveyResults") {
+          }  if (r.type == "surveyResults") {
             const ssR: staffStatRequest = r as staffStatRequest;
             console.log(ssR);
             data = await db.execute(
@@ -609,14 +649,14 @@ ORDER BY
               )
             );
             console.log(data);
-          } else if (r.type == "facilityStats") {
+          }  if (r.type == "facilityStats") {
             const ssR: staffStatRequest = r as staffStatRequest;
             data = await db.execute(
               sql.raw(
                 `SELECT facilitytype, COALESCE(SUM(CASE WHEN b.facility_id IS NOT NULL THEN 1 ELSE 0 END), 0) AS count FROM facility f LEFT JOIN booking b ON b.facility_id = f.facility_id AND EXTRACT(YEAR FROM start_time) = ${ssR.year} AND EXTRACT(MONTH FROM start_time) = ${ssR.month} GROUP BY facilitytype ORDER BY facilitytype`
               )
             );
-          } else if (r.type == "equipmentStats") {
+          }  if (r.type == "equipmentStats") {
             const ssR: staffStatRequest = r as staffStatRequest;
             data = await db.execute(
               sql.raw(`SELECT 
@@ -636,7 +676,7 @@ ORDER BY
     e.category;
 `)
             );
-          } else if (r.type == "specificFacilityStats") {
+          }  if (r.type == "specificFacilityStats") {
             const fsr: facilitystatRequest = r as facilitystatRequest;
             data = await db.execute(
               sql.raw(
@@ -644,7 +684,7 @@ ORDER BY
               )
             );
       
-          } else if (r.type == "staffRanking") {
+          }  if (r.type == "staffRanking") {
             const pR: staffPerformanceRequest = r as staffPerformanceRequest;
             data = await db.execute(
               sql.raw(
@@ -652,7 +692,7 @@ ORDER BY
               )
             );
             console.log(data);
-          } else if (r.type == "staffStats") {
+          }  if (r.type == "staffStats") {
             const ssR: staffStatRequest = r as staffStatRequest;
             if (infoObj.payload.access == "2") {
               let totalRequests = await db.execute(

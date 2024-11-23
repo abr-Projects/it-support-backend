@@ -6,7 +6,8 @@ import { Chart, type ChartEvent } from 'chart.js/auto';
 
 
 declare const PARTYKIT_HOST: string;
-
+let idleTimeout: ReturnType<typeof setTimeout>;
+const idleTimeLimit = 10 * 60 * 1000;
 const problems = ["General IT","No Sound","Cannot Open Files","Projector Failure","Monitors no display","Others"]
 const leadZero = (num: number, places: number) => String(num).padStart(places, '0')
 interface Booking {
@@ -216,10 +217,26 @@ function preventInput(e: KeyboardEvent) {
   }
 }
 
+function logout() {
+  localStorage.removeItem("conn_id");
+  localStorage.removeItem("Token");
+  localStorage.removeItem("Access");
+  localStorage.removeItem("Name");
+  window.location.href = "/";
+}
+
+function resetIdleTimer() {
+  clearTimeout(idleTimeout); // Clear the previous timer
+  idleTimeout = setTimeout(logout, idleTimeLimit); // Start a new timer
+}
+
+["mousemove", "keydown", "scroll", "touchstart"].forEach((event) => {
+  window.addEventListener(event, resetIdleTimer);
+});
 
 
 window.document.addEventListener("DOMContentLoaded",function(){
-
+  resetIdleTimer();
   Array.from(document.getElementsByClassName("close")).forEach(btn => {
     btn.addEventListener("click", () => {
       const parentElement = btn.parentElement?.parentElement;
@@ -229,11 +246,7 @@ window.document.addEventListener("DOMContentLoaded",function(){
     })
   });
   document.getElementById("logout")?.addEventListener("click", () => {
-    localStorage.removeItem("conn_id");
-    localStorage.removeItem("Token");
-    localStorage.removeItem("Access");
-    localStorage.removeItem("Name");
-    window.location.href = "/";
+    logout();
   })
   const tickets = document.getElementById("tickets");
   if (tickets) {
