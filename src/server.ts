@@ -64,11 +64,12 @@ export default class Server implements Party.Server {
       if (req.type == "update") {
         ///update ticket
         
-  
+        //I CHANGED IT
+
         const data: any = await db.execute(
-          sql.raw(
+          sql
             `SELECT conn_id from request WHERE request_id = '${req.req_id}'`
-          )
+          
         );
         let message = {};
         if (req.update == "accept") {
@@ -79,9 +80,9 @@ export default class Server implements Party.Server {
             name: req.name,
           };
           await db.execute(
-            sql.raw(
+            sql
               `UPDATE request SET rStatus = 'ACCEPTED',technician_id = ${infoObj.payload.id} WHERE request_id = '${req.req_id}'`
-            )
+            
           );
         } else if (req.update == "complete") {
           message = {
@@ -91,9 +92,9 @@ export default class Server implements Party.Server {
             name: req.name,
           };
           await db.execute(
-            sql.raw(
+            sql
               `UPDATE request SET end_ts = NOW(), rStatus = 'COMPLETED' WHERE request_id = '${req.req_id}'`
-            )
+            
           );
         }
         let found = false;
@@ -114,8 +115,8 @@ export default class Server implements Party.Server {
         
   
         await db.execute(
-          sql.raw(`INSERT INTO rental (rental_id, staff_id, rental_date, due_date, purpose) 
-                          VALUES ('${req.r_id}', '${infoObj.payload.id}', TO_DATE('${req.rdate}', 'YYYY-MM-DD'), TO_DATE('${req.ddate}', 'YYYY-MM-DD'), '${req.purpose}')`)
+          sql`INSERT INTO rental (rental_id, staff_id, rental_date, due_date, purpose) 
+                          VALUES ('${req.r_id}', '${infoObj.payload.id}', TO_DATE('${req.rdate}', 'YYYY-MM-DD'), TO_DATE('${req.ddate}', 'YYYY-MM-DD'), '${req.purpose}')`
         );
   
         await Promise.all(
@@ -124,23 +125,23 @@ export default class Server implements Party.Server {
             if (equip.amount > 0) {
   
               let data = await db.execute(
-                sql.raw(`SELECT e.equipment_id
+                sql`SELECT e.equipment_id
               FROM equipment e 
               LEFT JOIN rent_equipment re ON e.equipment_id = re.equipment_id
               LEFT JOIN rental r ON re.rental_id = r.rental_id
               WHERE e.category = '${equip.name}'
               GROUP BY e.equipment_id
               HAVING MAX(r.due_date) < TO_DATE('${req.rdate}', 'YYYY-MM-DD') OR MAX(r.due_date) IS NULL
-              LIMIT ${equip.amount};`)
+              LIMIT ${equip.amount};`
               );
   
         
               data.forEach(async (item: any) => {
                 await db.execute(
-                  sql.raw(
+                  sql
                     `INSERT INTO rent_equipment (rental_id, equipment_id) VALUES ('${req.r_id}', '${item.equipment_id}')`
-                  )
-                );
+                )
+                
               });
             }
           })
@@ -155,17 +156,17 @@ export default class Server implements Party.Server {
        
   
         await db.execute(
-          sql.raw(`INSERT INTO request (request_id, staff_id, technician_id, dsc, rStatus, classroom, conn_id,created_ts,priority) 
+          sql`INSERT INTO request (request_id, staff_id, technician_id, dsc, rStatus, classroom, conn_id,created_ts,priority) 
         VALUES ('${req.req_id}', '${infoObj.payload.id.toString()}', 0, '${req.desc
-            }', 'PENDING', '${req.room}', '${sender.id}', NOW(),${req.priority})`)
-        );
+            }', 'PENDING', '${req.room}', '${sender.id}', NOW(),${req.priority})`);
+        
         await Promise.all(
           req.problems.map(async (element: string, index: number) => {
             await db.execute(
-              sql.raw(
+              sql
                 `INSERT INTO issues (issue_id,request_id, issue) VALUES ('${index + Date.now().toString()
                 }',${req.req_id}, '${element}')`
-              )
+              
             );
           })
         );
@@ -187,7 +188,7 @@ export default class Server implements Party.Server {
      
        
         const data = await db.execute(
-          sql.raw(`INSERT INTO Booking (booking_id,facility_id, staff_id, event_name, event_description, remarks, start_time, end_time, bStatus)
+          sql`INSERT INTO Booking (booking_id,facility_id, staff_id, event_name, event_description, remarks, start_time, end_time, bStatus)
           SELECT ${req.b_id.toString()},${req.facility
             }, ${infoObj.payload.id.toString()}, '${req.eName}', '${req.eDesc}', '${req.remarks
             }',  to_timestamp('${req.bDate + " " + req.sTime
@@ -200,7 +201,7 @@ export default class Server implements Party.Server {
               AND NOT (start_time >= to_timestamp('${req.bDate + " " + req.eTime
             }', 'YYYY-MM-DD HH24:MI') OR end_time <= to_timestamp('${req.bDate + " " + req.sTime
             }', 'YYYY-MM-DD HH24:MI'))
-          ) RETURNING *;`)
+          ) RETURNING *;`
         );
         console.log(data);
         if (data.length == 0) {
@@ -223,9 +224,9 @@ export default class Server implements Party.Server {
       if (req.type == "updateB") {
         //update booking
         const data: any = await db.execute(
-          sql.raw(
+          sql
             `UPDATE booking SET bstatus = 'APPROVED' WHERE booking_id = '${req.b_id}'`
-          )
+          
         );
         this.room.broadcast(JSON.stringify({ ...req, bStatus: "APPROVED" }));
       }
@@ -254,18 +255,18 @@ export default class Server implements Party.Server {
             : `to_timestamp('${end_ts}', 'YYYY-MM-DD HH24:MI:SS')`;
   
         const data = await db.execute(
-          sql.raw(
+          sql
             `UPDATE request SET classroom = '${req.room}', dsc = '${req.desc}', priority = '${req.priority}', created_ts = ${created_ts_query}, end_ts = ${end_ts_query}, technician_id = '${req.technician_el}', rstatus = '${req.rstatus}' WHERE request_id = '${req.req_id}'`
-          )
+          
         );
         await Promise.all(
           req.problems
             .split(",")
             .map(async (element: string, index: number) => {
               await db.execute(
-                sql.raw(
+                sql
                   `UPDATE issues SET issue = '${element}' WHERE request_id = '${req.req_id}';`
-                )
+                
               );
             })
         );
@@ -284,9 +285,9 @@ export default class Server implements Party.Server {
         }
   
         await db.execute(
-          sql.raw(
+          sql
             `UPDATE booking SET start_time = to_timestamp('${req.bDate} ${req.sTime}', 'YYYY-MM-DD HH24:MI:SS'), end_time = to_timestamp('${req.bDate} ${req.eTime}', 'YYYY-MM-DD HH24:MI:SS'), event_name = '${req.eName}', event_description = '${req.eDesc}', remarks = '${req.remarks}', facility_id = ${req.facility}, bstatus = '${req.bStatus}' WHERE booking_id = '${req.b_id}';`
-          )
+          
         );
   
         const rK: string = "token";
@@ -306,9 +307,9 @@ export default class Server implements Party.Server {
               status = "Returned";
             }
             await db.execute(
-              sql.raw(
+              sql
                 `UPDATE rental SET rstatus = '${status}' WHERE rental_id = '${req.r_id}';`
-              )
+              
             );
           }
           this.room.broadcast(JSON.stringify(req));
@@ -429,9 +430,9 @@ export default class Server implements Party.Server {
         const lR: LoginRequest = r as LoginRequest;
         console.log(lR);
         const data = await db.execute(
-          sql.raw(
-            `SELECT passw ,access,first_name,last_name,id FROM staff WHERE id = ${lR.id.toString()};`
-          )
+          sql`
+            SELECT passw ,access,first_name,last_name,id FROM staff WHERE id = ${lR.id.toString()};`
+          
         );
         
         if (data.length == 0) {
@@ -475,24 +476,24 @@ export default class Server implements Party.Server {
           let data;
           if (r.type == "profile") {
             data = await db.execute(
-              sql.raw(`SELECT * FROM staff WHERE id = ${infoObj.payload.id};`)
-            );
+              sql`SELECT * FROM staff WHERE id = ${infoObj.payload.id};`)
+            
             console.log(data);
           }
           if (r.type == "editProfile") {
             const epr: editProfileRequest = r as editProfileRequest;
             data = await db.execute(
-              sql.raw(
+              sql
                 `UPDATE staff SET email_address = '${epr.email}', phone_number = '${epr.phone}', passw = '${epr.passw}' WHERE id = '${infoObj.payload.id}'`
-              )
+              
             );
           }
           if (r.type == "aEditProfile") {
             const epr: adminEditProfileRequest = r as adminEditProfileRequest;
             data = await db.execute(
-              sql.raw(
+              sql
                 `UPDATE staff SET email_address = '${epr.email}', phone_number = '${epr.phone}', passw = '${epr.passw}',access= '${epr.access} WHERE id = '${infoObj.payload.id}'`
-              )
+              
             );
           }
           if (r.type == "addStaff") {
@@ -500,30 +501,30 @@ export default class Server implements Party.Server {
 
             const aasr: adminAddStaffRequest = r as adminAddStaffRequest;
             data = await db.execute(
-              sql.raw(
+              sql
                 `INSERT INTO staff (id,first_name,last_name,gender,access,email_address,phone_number,passw) VALUES (${aasr.fname},${aasr.lname},${aasr.gender},${aasr.access},${aasr.email_address},${aasr.phone_number},${aasr.passw});`
-              )
+              
             );
           }
 
           if (r.type == "checkEquipment") {
             data = await db.execute(
-              sql.raw(`SELECT 
-    te.category,
-    (te.count - COALESCE(re.count, 0)) AS count
-FROM 
-    totalequipment te
-LEFT JOIN 
-    rentedequipment re ON te.category = re.category
-ORDER BY 
-    te.category;
+              sql`SELECT 
+                te.category,
+                (te.count - COALESCE(re.count, 0)) AS count
+            FROM 
+                totalequipment te
+            LEFT JOIN 
+                rentedequipment re ON te.category = re.category
+            ORDER BY 
+                te.category;
 
-`)
+`
             );
           }
           if (r.type == "allEquipment") {
             data = await db.execute(
-              sql.raw(`SELECT 
+              sql`SELECT 
     r.rental_id as r_id,
     r.rental_date as rDate,
     r.due_date as dDate,
@@ -558,12 +559,12 @@ GROUP BY
 ORDER BY 
     r.rental_id;
 `)
-            );
+            
           }
 
           if (r.type == "myTickets") {
             data = await db.execute(
-              sql.raw(`SELECT r.request_id, r.staff_id, r.rstatus ,r.dsc, r.classroom ,r.priority,r.created_ts, concat(s.first_name, ' ', s.last_name) as name , string_agg(i.issue, ', ') AS issues,
+              sql`SELECT r.request_id, r.staff_id, r.rstatus ,r.dsc, r.classroom ,r.priority,r.created_ts, concat(s.first_name, ' ', s.last_name) as name , string_agg(i.issue, ', ') AS issues,
               COALESCE(concat(t.first_name, ' ', t.last_name), 'N/A') as technician, r.end_ts as end_ts
             FROM request r
             LEFT JOIN issues i ON r.request_id = i.request_id
@@ -571,7 +572,7 @@ ORDER BY
             LEFT JOIN staff t ON r.technician_id = t.id
             WHERE r.staff_id = ${infoObj.payload.id}
             GROUP BY r.request_id, r.staff_id, s.first_name, s.last_name, r.dsc, r.classroom, t.first_name, t.last_name`)
-            );
+            
           }  if (r.type == "tickets") {
             if (infoObj.payload.access != "2") {
               return new Response(JSON.stringify({ state: "Access denied" }), {
@@ -580,26 +581,26 @@ ORDER BY
               });
             }
             data = await db.execute(
-              sql.raw(`SELECT r.request_id, r.staff_id, r.technician_id, r.rstatus ,r.dsc, r.classroom ,r.priority,r.created_ts, concat(s.first_name,' ',s.last_name) as name , string_agg(i.issue, ', ') AS issues
+              sql`SELECT r.request_id, r.staff_id, r.technician_id, r.rstatus ,r.dsc, r.classroom ,r.priority,r.created_ts, concat(s.first_name,' ',s.last_name) as name , string_agg(i.issue, ', ') AS issues
             FROM request r
             LEFT JOIN issues i ON r.request_id = i.request_id
             LEFT JOIN staff s ON r.staff_id = s.id
             WHERE r.technician_id = ${infoObj.payload.id} OR r.technician_id = 0
             GROUP BY r.request_id, r.staff_id, r.technician_id , s.first_name, s.last_name, r.dsc, r.classroom`)
-            );
+            
           }  if (r.type == "bookings") {
             data = await db.execute(
-              sql.raw(`SELECT s.id, booking_id, s.first_name, s.last_name, f.facility_id, facilityType,event_name,event_description,remarks,start_time,end_time,bstatus FROM booking b, facility f,staff s 
+              sql`SELECT s.id, booking_id, s.first_name, s.last_name, f.facility_id, facilityType,event_name,event_description,remarks,start_time,end_time,bstatus FROM booking b, facility f,staff s 
               WHERE b.facility_id = f.facility_id AND b.staff_id = s.id`)
-            );
+            
           }  if (r.type == "survey") {
             const sR: surveyRequest = r as surveyRequest;
 
             data = await db.execute(
-              sql.raw(
+              sql
                 `INSERT INTO survey (request_id, speed, quality, attitude, comment, staff_id) SELECT '${sR.req_id}', ${sR.speed}, ${sR.quality}, ${sR.attitude}, '${sR.comment}', '${infoObj.payload.id}' WHERE EXISTS (SELECT 1 FROM request WHERE request_id = '${sR.req_id}' AND staff_id = '${infoObj.payload.id}') RETURNING *;`
               )
-            );
+            
             if (data.length == 0) {
               return new Response(JSON.stringify({ status: "No permission" }), {
                 status: 401,
@@ -615,17 +616,17 @@ ORDER BY
             }
 
             let tickets = await db.execute(
-              sql.raw(`SELECT r.request_id, r.staff_id, r.technician_id, r.rstatus ,r.dsc, r.classroom ,r.priority,r.created_ts, r.end_ts ,concat(s.first_name,' ',s.last_name) as name , string_agg(i.issue, ', ') AS issues
+              sql`SELECT r.request_id, r.staff_id, r.technician_id, r.rstatus ,r.dsc, r.classroom ,r.priority,r.created_ts, r.end_ts ,concat(s.first_name,' ',s.last_name) as name , string_agg(i.issue, ', ') AS issues
             FROM request r
             LEFT JOIN issues i ON r.request_id = i.request_id
             LEFT JOIN staff s ON r.staff_id = s.id
             GROUP BY r.request_id, r.staff_id, r.technician_id , s.first_name, s.last_name, r.dsc, r.classroom`)
-            );
+            
             let staff = await db.execute(
-              sql.raw(
+              sql
                 `SELECT id, access, concat(first_name,' ',last_name) as name FROM staff`
               )
-            );
+            
             data = { tickets: tickets, staff: staff };
           }  if (r.type == "aStaff") {
             if (infoObj.payload.access != "1") {
@@ -636,30 +637,30 @@ ORDER BY
             }
 
             data = await db.execute(
-              sql.raw(
+              sql
                 `SELECT id, access, concat(first_name,' ',last_name) as name FROM staff`
               )
-            );
+          
           }  if (r.type == "surveyResults") {
             const ssR: staffStatRequest = r as staffStatRequest;
             console.log(ssR);
             data = await db.execute(
-              sql.raw(
+              sql
                 `SELECT EXTRACT(YEAR FROM end_ts) AS "year", EXTRACT(MONTH FROM end_ts) AS "month", AVG(s.speed) AS "speed", AVG(s.quality) AS "quality", AVG(s.attitude) AS "attitude" FROM survey s JOIN request r ON r.request_id = s.request_id WHERE r.rstatus = 'COMPLETED' AND EXTRACT(YEAR FROM end_ts) = ${ssR.year} AND EXTRACT(MONTH FROM end_ts) = ${ssR.month} GROUP BY EXTRACT(YEAR FROM end_ts), EXTRACT(MONTH FROM end_ts);`
               )
-            );
+            
             console.log(data);
           }  if (r.type == "facilityStats") {
             const ssR: staffStatRequest = r as staffStatRequest;
             data = await db.execute(
-              sql.raw(
+              sql
                 `SELECT facilitytype, COALESCE(SUM(CASE WHEN b.facility_id IS NOT NULL THEN 1 ELSE 0 END), 0) AS count FROM facility f LEFT JOIN booking b ON b.facility_id = f.facility_id AND EXTRACT(YEAR FROM start_time) = ${ssR.year} AND EXTRACT(MONTH FROM start_time) = ${ssR.month} GROUP BY facilitytype ORDER BY facilitytype`
               )
-            );
+        
           }  if (r.type == "equipmentStats") {
             const ssR: staffStatRequest = r as staffStatRequest;
             data = await db.execute(
-              sql.raw(`SELECT 
+              sql`SELECT 
     e.category,
     COUNT(r.rental_id) AS count
 FROM 
@@ -675,49 +676,49 @@ GROUP BY
 ORDER BY 
     e.category;
 `)
-            );
+       
           }  if (r.type == "specificFacilityStats") {
             const fsr: facilitystatRequest = r as facilitystatRequest;
             data = await db.execute(
-              sql.raw(
+              sql
                 `SELECT f.facility_name, COUNT(b.facility_id) FROM facility f LEFT JOIN booking b ON b.facility_id = f.facility_id WHERE f.facilitytype = '${fsr.category}' GROUP BY f.facility_name ORDER BY f.facility_name`
               )
-            );
+          
       
           }  if (r.type == "staffRanking") {
             const pR: staffPerformanceRequest = r as staffPerformanceRequest;
             data = await db.execute(
-              sql.raw(
+              sql
                 `SELECT concat(st.first_name,' ',st.last_name) as name, r.technician_id,  AVG(${pR.category}) AS averageValue FROM survey s,request r,staff st WHERE EXTRACT(YEAR FROM end_ts) = ${pR.year} AND EXTRACT(MONTH FROM end_ts) = ${pR.month} AND s.request_id = r.request_id and r.technician_id = st.id GROUP BY name,r.technician_id ORDER BY averageValue ${pR.order} LIMIT 5`
               )
-            );
+            
             console.log(data);
           }  if (r.type == "staffStats") {
             const ssR: staffStatRequest = r as staffStatRequest;
             if (infoObj.payload.access == "2") {
               let totalRequests = await db.execute(
-                sql.raw(
+                sql
                   `SELECT rstatus,COUNT(*) AS count FROM request WHERE technician_id = ${infoObj.payload.id} AND EXTRACT(YEAR FROM end_ts) = ${ssR.year} AND EXTRACT(MONTH FROM end_ts) = ${ssR.month} GROUP BY rstatus`
                 )
-              );
+              
               let ratings = await db.execute(
-                sql.raw(
+                sql
                   `SELECT r.technician_id, AVG(speed) as speed,AVG(quality) as quality, AVG(attitude) AS attitude FROM survey s,request r WHERE r.technician_id = ${infoObj.payload.id} AND s.request_id = r.request_id AND EXTRACT(YEAR FROM end_ts) = ${ssR.year} AND EXTRACT(MONTH FROM end_ts) = ${ssR.month} GROUP BY r.technician_id`
                 )
-              );
+              
               data = { totalRequests: totalRequests, ratings: ratings };
             }
             if (infoObj.payload.access == "3") {
               let totalRequests = await db.execute(
-                sql.raw(
+                sql
                   `SELECT rstatus, COUNT(*) AS count FROM request WHERE staff_id = ${infoObj.payload.id} AND EXTRACT(YEAR FROM end_ts) = ${ssR.year} AND EXTRACT(MONTH FROM end_ts) = ${ssR.month} GROUP BY rstatus`
                 )
-              );
+              
               let totalBookings = await db.execute(
-                sql.raw(
+                sql
                   `SELECT bstatus, COUNT(*) AS count FROM booking WHERE staff_id = ${infoObj.payload.id} AND EXTRACT(YEAR FROM start_time) = ${ssR.year} AND EXTRACT(MONTH FROM start_time) = ${ssR.month} GROUP BY bstatus`
                 )
-              );
+              
 
               data = {
                 totalRequests: totalRequests,
