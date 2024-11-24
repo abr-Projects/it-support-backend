@@ -765,24 +765,27 @@ window.document.addEventListener("DOMContentLoaded",function(){
   else if(window.document.location.pathname == '/profile.html'){
 
     function validatePassword(){
-      var letters = /[A-Za-z]/g;
+      let state = "valid";
+      const letters = /[A-Za-z]/g;
       if(psw.value!.match(letters)) {  
         letter.classList.remove("invalid");
         letter.classList.add("valid");
       } else {
         letter.classList.remove("valid");
         letter.classList.add("invalid");
+        state = "password must contain at least one letter";
       }
 
     
 
-      var numbers = /[0-9]/g;
+      const numbers = /[0-9]/g;
       if(psw.value.match(numbers)) {  
         number.classList.remove("invalid");
         number.classList.add("valid");
       } else {
         number.classList.remove("valid");
         number.classList.add("invalid");
+        state = "password must contain at least one number";
       }
 
       if(psw.value.length >= 8) {
@@ -791,14 +794,16 @@ window.document.addEventListener("DOMContentLoaded",function(){
       } else {
         length.classList.remove("valid");
         length.classList.add("invalid");
+        state = "password must be at least 8 characters long";
       }
 
+      return state
 
     }
-    var psw = document.getElementById("psw")! as HTMLInputElement;
-    var letter = document.getElementById("letter")!;
-    var number = document.getElementById("number")!;
-    var length = document.getElementById("length")!;
+    const psw = document.getElementById("psw")! as HTMLInputElement;
+    const letter = document.getElementById("letter")!;
+    const number = document.getElementById("number")!;
+    const length = document.getElementById("length")!;
 
     psw.onfocus = function() {
       document.getElementById("passMessage")!.style.display = "block";
@@ -958,44 +963,37 @@ window.document.addEventListener("DOMContentLoaded",function(){
 
       const staffContainer = document.getElementById('staff_info')?.getElementsByClassName('container')[0]!;
       staffContainer.getElementsByClassName('name')[0].textContent = localStorage.getItem("Name")
-      staffContainer.getElementsByClassName('email')[0].textContent = `Email: ${data[0].email_address}`
-      staffContainer.getElementsByClassName('phone')[0].textContent = `Phone: ${data[0].phone_number}`
+      staffContainer.getElementsByClassName('email')[0].textContent = data[0].email_address;
+      staffContainer.getElementsByClassName('phone')[0].textContent = data[0].phone_number;
       staffContainer.getElementsByClassName('role')[0].textContent = accesstoRole[data[0].access];
-      (staffContainer.getElementsByClassName('password')[0] as HTMLInputElement).value = data[0].passw
+      (staffContainer.getElementsByClassName('password')[0] as HTMLInputElement).value = data[0].passw;
       staffContainer.getElementsByClassName("Edit")[0].addEventListener("click", () => {
         
         if(staffContainer.getElementsByClassName('Edit')[0].textContent == "Save"){
-          if(!validateEmail(staffContainer.getElementsByClassName('email')[0].querySelector("input")!.value)){
+          let email_input = staffContainer.getElementsByClassName('email')[0].querySelector("input")!.value
+          let phone_input = staffContainer.getElementsByClassName('phone')[0].querySelector("input")!.value
+          console.log(email_input,phone_input)
+          if(!validateEmail(email_input)){
             alert("Invalid Email")
             return
           }
-          if(isNaN(parseInt(staffContainer.getElementsByClassName('phone')[0].querySelector("input")!.value)) || staffContainer.getElementsByClassName('phone')[0].querySelector("input")!.value.length != 8){
+          if(isNaN(parseInt(phone_input)) || phone_input.length != 8){
             alert("Invalid Phone")
             return
           }
-          if(!((staffContainer.getElementsByClassName('password')[0] as HTMLInputElement).value!.match("(?=.*\d)(?=.*[A-Za-z]).{8,}"))){
-            alert ("Invalid Password")
+          if(!(validatePassword() == "valid")){
+            alert(validatePassword())
             return
           }
 
-
-          (staffContainer.getElementsByClassName('Edit')[0] as HTMLButtonElement).disabled  = true;
-          (staffContainer.getElementsByClassName('password')[0] as HTMLInputElement).disabled = true;
-          (staffContainer.getElementsByClassName('password')[0] as HTMLInputElement).type = "password";
-          (staffContainer.getElementsByClassName('password')[0] as HTMLInputElement).pattern = "(?=.*\d)(?=.*[A-Za-z]).{8,}"
-
-
-
-          staffContainer.getElementsByClassName('email')[0].textContent = `Email: ${staffContainer.getElementsByClassName('email')[0].querySelector("input")!.value}`
-          staffContainer.getElementsByClassName('phone')[0].textContent = `Phone: ${staffContainer.getElementsByClassName('phone')[0].querySelector("input")!.value}`
           const editMessage  = {
             type:"editProfile",
             token: localStorage.getItem("Token"),
-            email: staffContainer.getElementsByClassName('email')[0].querySelector("input")!.value,
-            phone: staffContainer.getElementsByClassName('phone')[0].querySelector("input")!.value,
-            passw: (staffContainer.getElementsByClassName('password')[0] as HTMLInputElement).value
-          }
-          console.log(editMessage)
+            email: email_input,
+            phone: phone_input,
+            passw: psw.value!,
+          };
+          console.log(editMessage);
           PartySocket.fetch(
             {
               host: PARTYKIT_HOST,
@@ -1010,7 +1008,18 @@ window.document.addEventListener("DOMContentLoaded",function(){
               console.log("YOU ARE NOT OK!")
             }
             alert("Profile Updated")
-          })
+          });
+
+          (staffContainer.getElementsByClassName('Edit')[0] as HTMLButtonElement).disabled  = true;
+          (staffContainer.getElementsByClassName('password')[0] as HTMLInputElement).disabled = true;
+          (staffContainer.getElementsByClassName('password')[0] as HTMLInputElement).type = "password";
+          (staffContainer.getElementsByClassName('password')[0] as HTMLInputElement).pattern = "(?=.*\d)(?=.*[A-Za-z]).{8,}"
+
+
+
+          staffContainer.getElementsByClassName('email')[0].textContent = email_input
+          staffContainer.getElementsByClassName('phone')[0].textContent = phone_input
+          
           setTimeout(() => {
             (staffContainer.getElementsByClassName('Edit')[0] as HTMLButtonElement).disabled  = false
             staffContainer.getElementsByClassName('Edit')[0].textContent = "Edit Profile";
@@ -1049,7 +1058,7 @@ window.document.addEventListener("DOMContentLoaded",function(){
 
       document.getElementById("statBtn")!.addEventListener("click", () => {
 
-        var sForm = document.getElementById("stats")!;
+        const sForm = document.getElementById("stats")!;
         sForm.style.display = "block";
         const monthSelect = document.getElementById('monthSelector') as unknown as HTMLSelectElement;
         const index = new Date().getMonth();
@@ -1234,7 +1243,7 @@ window.document.addEventListener("DOMContentLoaded",function(){
         const bDateV = res.start_time.split(" ")[0]
         
         box.addEventListener("click", () => {
-          var bForm = document.getElementById("bookingForm")!;
+          const bForm = document.getElementById("bookingForm")!;
           bForm.style.display = "block";
           const bDate = document.getElementById("bDate") as HTMLInputElement;
           const sTime = document.getElementById("sTime") as HTMLInputElement;
@@ -1485,7 +1494,7 @@ window.document.addEventListener("DOMContentLoaded",function(){
 
           box.addEventListener("click", () => {
        
-            var bForm = document.getElementById("bookingForm")!;
+            const bForm = document.getElementById("bookingForm")!;
             bForm.style.display = "block";
             const bDate = document.getElementById("bDate") as HTMLInputElement;
             const sTime = document.getElementById("sTime") as HTMLInputElement;
@@ -1587,12 +1596,12 @@ window.document.addEventListener("DOMContentLoaded",function(){
       document.getElementById("bRequest")!.style.display = "none";
     }
     document.getElementById("bRequest")!.addEventListener("click", () => {
-      var bForm = document.getElementById("bookingForm")!;
+      const bForm = document.getElementById("bookingForm")!;
       bForm.style.display = "block";
     })
     document.getElementById("filterBtn")!.addEventListener("click", () => {
 
-      var fForm = document.getElementById("filterBookings")!;
+      const fForm = document.getElementById("filterBookings")!;
       fForm.style.display = "block";
       
     })
@@ -1668,7 +1677,7 @@ window.document.addEventListener("DOMContentLoaded",function(){
               return;
             }
             alert("Booking Request Sent")
-            var bForm = document.getElementById("bookingForm")!;
+            const bForm = document.getElementById("bookingForm")!;
             bForm.style.display = "none";
             const facilityType = facility.getAttribute("facilityType") ?? "";
             const bReq = {
@@ -1697,8 +1706,8 @@ window.document.addEventListener("DOMContentLoaded",function(){
         }
     }
 
-      var fForm = document.getElementById("filterBookings")!;
-      var fColorsArr = Object.keys(fColors).map((key) => [key, fColors[key]]);
+      const fForm = document.getElementById("filterBookings")!;
+      const fColorsArr = Object.keys(fColors).map((key) => [key, fColors[key]]);
       fColorsArr.forEach((fc) => {
         const grp = document.createElement('div');
         grp.classList.add('group');
@@ -2105,7 +2114,7 @@ window.document.addEventListener("DOMContentLoaded",function(){
 
       document.getElementById("statBtn")!.addEventListener("click", () => {
 
-        var sForm = document.getElementById("stats")!;
+        const sForm = document.getElementById("stats")!;
         sForm.style.display = "block";
         const monthSelect = document.getElementById('monthSelector') as unknown as HTMLSelectElement;
         const index = new Date().getMonth();
@@ -2199,7 +2208,7 @@ window.document.addEventListener("DOMContentLoaded",function(){
 
     }
 
-      var fForm = document.getElementById("filterRentals")!;
+    const fForm = document.getElementById("filterRentals")!;
       document.getElementById("filterBtn")!.addEventListener("click", () => {
 
 
@@ -2207,7 +2216,7 @@ window.document.addEventListener("DOMContentLoaded",function(){
         
       })
 
-      var eColorsArr = Object.keys(eColors).map((key) => [key, eColors[key]]);
+      const eColorsArr = Object.keys(eColors).map((key) => [key, eColors[key]]);
       eColorsArr.forEach((ec) => {
         const grp = document.createElement('div');
         grp.classList.add('group');
@@ -2812,7 +2821,7 @@ ws.addEventListener("message", (message : any) => {
       //MIGHT CAUSE ERROR DUE TO MULTIPLE CLICK EVENT LISTENER
 
       box.addEventListener("click", () => {
-        var bForm = document.getElementById("bookingForm")!;
+        const bForm = document.getElementById("bookingForm")!;
         bForm.style.display = "block";
         const bDate = document.getElementById("bDate") as HTMLInputElement;
         const sTime = document.getElementById("sTime") as HTMLInputElement;
@@ -3042,7 +3051,7 @@ ws.addEventListener("message", (message : any) => {
         box.style.backgroundColor = fColors[res.facilityType]
   
         box.addEventListener("click", () => {
-          var bForm = document.getElementById("bookingForm")!;
+          const bForm = document.getElementById("bookingForm")!;
           bForm.style.display = "block";
           const bDate = document.getElementById("bDate") as HTMLInputElement;
           const sTime = document.getElementById("sTime") as HTMLInputElement;

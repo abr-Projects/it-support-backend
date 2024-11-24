@@ -482,17 +482,16 @@ export default class Server implements Party.Server {
           }
           if (r.type == "editProfile") {
             const epr: editProfileRequest = r as editProfileRequest;
+            console.log("SERVER",epr)
             data = await db.execute(
-              sql
-                `UPDATE staff SET email_address = '${epr.email}', phone_number = '${epr.phone}', passw = '${epr.passw}' WHERE id = '${infoObj.payload.id}'`
-              
+              sql`UPDATE staff SET email_address = ${epr.email}, phone_number = ${epr.phone}, passw = ${epr.passw} WHERE id = ${infoObj.payload.id}`
             );
           }
           if (r.type == "aEditProfile") {
             const epr: adminEditProfileRequest = r as adminEditProfileRequest;
             data = await db.execute(
               sql
-                `UPDATE staff SET email_address = '${epr.email}', phone_number = '${epr.phone}', passw = '${epr.passw}',access= '${epr.access} WHERE id = '${infoObj.payload.id}'`
+                `UPDATE staff SET email_address = '${epr.email}', phone_number = '${epr.phone}', passw = '${epr.passw}',access= '${epr.access} WHERE id = ${infoObj.payload.id}`
               
             );
           }
@@ -598,7 +597,7 @@ ORDER BY
 
             data = await db.execute(
               sql
-                `INSERT INTO survey (request_id, speed, quality, attitude, comment, staff_id) SELECT '${sR.req_id}', ${sR.speed}, ${sR.quality}, ${sR.attitude}, '${sR.comment}', '${infoObj.payload.id}' WHERE EXISTS (SELECT 1 FROM request WHERE request_id = '${sR.req_id}' AND staff_id = '${infoObj.payload.id}') RETURNING *;`
+                `INSERT INTO survey (request_id, speed, quality, attitude, comment, staff_id) SELECT '${sR.req_id}', ${sR.speed}, ${sR.quality}, ${sR.attitude}, '${sR.comment}', '${infoObj.payload.id}' WHERE EXISTS (SELECT 1 FROM request WHERE request_id = '${sR.req_id}' AND staff_id = ${infoObj.payload.id}) RETURNING *;`
               )
             
             if (data.length == 0) {
