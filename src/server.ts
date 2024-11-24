@@ -68,7 +68,7 @@ export default class Server implements Party.Server {
 
         const data: any = await db.execute(
           sql
-            `SELECT conn_id from request WHERE request_id = '${req.req_id}'`
+            `SELECT conn_id from request WHERE request_id = ${req.req_id}`
           
         );
         let message = {};
@@ -81,7 +81,7 @@ export default class Server implements Party.Server {
           };
           await db.execute(
             sql
-              `UPDATE request SET rStatus = 'ACCEPTED',technician_id = ${infoObj.payload.id} WHERE request_id = '${req.req_id}'`
+              `UPDATE request SET rStatus = 'ACCEPTED',technician_id = ${infoObj.payload.id} WHERE request_id = ${req.req_id}`
             
           );
         } else if (req.update == "complete") {
@@ -93,7 +93,7 @@ export default class Server implements Party.Server {
           };
           await db.execute(
             sql
-              `UPDATE request SET end_ts = NOW(), rStatus = 'COMPLETED' WHERE request_id = '${req.req_id}'`
+              `UPDATE request SET end_ts = NOW(), rStatus = 'COMPLETED' WHERE request_id = ${req.req_id}`
             
           );
         }
@@ -129,7 +129,7 @@ export default class Server implements Party.Server {
               FROM equipment e 
               LEFT JOIN rent_equipment re ON e.equipment_id = re.equipment_id
               LEFT JOIN rental r ON re.rental_id = r.rental_id
-              WHERE e.category = '${equip.name}'
+              WHERE e.category = ${equip.name}
               GROUP BY e.equipment_id
               HAVING MAX(r.due_date) < TO_DATE('${req.rdate}', 'YYYY-MM-DD') OR MAX(r.due_date) IS NULL
               LIMIT ${equip.amount};`
@@ -225,7 +225,7 @@ export default class Server implements Party.Server {
         //update booking
         const data: any = await db.execute(
           sql
-            `UPDATE booking SET bstatus = 'APPROVED' WHERE booking_id = '${req.b_id}'`
+            `UPDATE booking SET bstatus = 'APPROVED' WHERE booking_id = ${req.b_id}`
           
         );
         this.room.broadcast(JSON.stringify({ ...req, bStatus: "APPROVED" }));
@@ -256,7 +256,7 @@ export default class Server implements Party.Server {
   
         const data = await db.execute(
           sql
-            `UPDATE request SET classroom = '${req.room}', dsc = '${req.desc}', priority = '${req.priority}', created_ts = ${created_ts_query}, end_ts = ${end_ts_query}, technician_id = '${req.technician_el}', rstatus = '${req.rstatus}' WHERE request_id = '${req.req_id}'`
+            `UPDATE request SET classroom = ${req.room}, dsc = ${req.desc}, priority = ${req.priority}, created_ts = ${created_ts_query}, end_ts = ${end_ts_query}, technician_id = ${req.technician_el}, rstatus = ${req.rstatus} WHERE request_id = ${req.req_id}`
           
         );
         await Promise.all(
@@ -265,7 +265,7 @@ export default class Server implements Party.Server {
             .map(async (element: string, index: number) => {
               await db.execute(
                 sql
-                  `UPDATE issues SET issue = '${element}' WHERE request_id = '${req.req_id}';`
+                  `UPDATE issues SET issue = ${element} WHERE request_id = ${req.req_id};`
                 
               );
             })
@@ -286,7 +286,7 @@ export default class Server implements Party.Server {
   
         await db.execute(
           sql
-            `UPDATE booking SET start_time = to_timestamp('${req.bDate} ${req.sTime}', 'YYYY-MM-DD HH24:MI:SS'), end_time = to_timestamp('${req.bDate} ${req.eTime}', 'YYYY-MM-DD HH24:MI:SS'), event_name = '${req.eName}', event_description = '${req.eDesc}', remarks = '${req.remarks}', facility_id = ${req.facility}, bstatus = '${req.bStatus}' WHERE booking_id = '${req.b_id}';`
+            `UPDATE booking SET start_time = to_timestamp('${req.bDate} ${req.sTime}', 'YYYY-MM-DD HH24:MI:SS'), end_time = to_timestamp('${req.bDate} ${req.eTime}', 'YYYY-MM-DD HH24:MI:SS'), event_name = ${req.eName}, event_description = ${req.eDesc}, remarks = ${req.remarks}, facility_id = ${req.facility}, bstatus = ${req.bStatus} WHERE booking_id = ${req.b_id};`
           
         );
   
@@ -308,7 +308,7 @@ export default class Server implements Party.Server {
             }
             await db.execute(
               sql
-                `UPDATE rental SET rstatus = '${status}' WHERE rental_id = '${req.r_id}';`
+                `UPDATE rental SET rstatus = ${status} WHERE rental_id = ${req.r_id};`
               
             );
           }
@@ -491,7 +491,7 @@ export default class Server implements Party.Server {
             const epr: adminEditProfileRequest = r as adminEditProfileRequest;
             data = await db.execute(
               sql
-                `UPDATE staff SET email_address = '${epr.email}', phone_number = '${epr.phone}', passw = '${epr.passw}',access= '${epr.access} WHERE id = ${infoObj.payload.id}`
+                `UPDATE staff SET email_address = ${epr.email}, phone_number = ${epr.phone}, passw = ${epr.passw},access= ${epr.access} WHERE id = ${infoObj.payload.id}`
               
             );
           }
@@ -597,7 +597,7 @@ ORDER BY
 
             data = await db.execute(
               sql
-                `INSERT INTO survey (request_id, speed, quality, attitude, comment, staff_id) SELECT '${sR.req_id}', ${sR.speed}, ${sR.quality}, ${sR.attitude}, '${sR.comment}', '${infoObj.payload.id}' WHERE EXISTS (SELECT 1 FROM request WHERE request_id = '${sR.req_id}' AND staff_id = ${infoObj.payload.id}) RETURNING *;`
+                `INSERT INTO survey (request_id, speed, quality, attitude, comment, staff_id) SELECT '${sR.req_id}', ${sR.speed}, ${sR.quality}, ${sR.attitude}, '${sR.comment}', '${infoObj.payload.id}' WHERE EXISTS (SELECT 1 FROM request WHERE request_id = ${sR.req_id} AND staff_id = ${infoObj.payload.id}) RETURNING *;`
               )
             
             if (data.length == 0) {
@@ -680,7 +680,7 @@ ORDER BY
             const fsr: facilitystatRequest = r as facilitystatRequest;
             data = await db.execute(
               sql
-                `SELECT f.facility_name, COUNT(b.facility_id) FROM facility f LEFT JOIN booking b ON b.facility_id = f.facility_id WHERE f.facilitytype = '${fsr.category}' GROUP BY f.facility_name ORDER BY f.facility_name`
+                `SELECT f.facility_name, COUNT(b.facility_id) FROM facility f LEFT JOIN booking b ON b.facility_id = f.facility_id WHERE f.facilitytype = ${fsr.category} GROUP BY f.facility_name ORDER BY f.facility_name`
               )
           
       
