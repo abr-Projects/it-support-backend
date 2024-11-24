@@ -10,6 +10,13 @@ let idleTimeout: ReturnType<typeof setTimeout>;
 const idleTimeLimit = 10 * 60 * 1000;
 const problems = ["General IT","No Sound","Cannot Open Files","Projector Failure","Monitors no display","Others"]
 const leadZero = (num: number, places: number) => String(num).padStart(places, '0')
+const validateEmail = (email: string) => {
+  return String(email)
+    .toLowerCase()
+    .match(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+};
 interface Booking {
   b_id: string;
   bDate: string;
@@ -226,8 +233,8 @@ function logout() {
 }
 
 function resetIdleTimer() {
-  clearTimeout(idleTimeout); // Clear the previous timer
-  idleTimeout = setTimeout(logout, idleTimeLimit); // Start a new timer
+  clearTimeout(idleTimeout); 
+  idleTimeout = setTimeout(logout, idleTimeLimit);
 }
 
 ["mousemove", "keydown", "scroll", "touchstart"].forEach((event) => {
@@ -756,6 +763,56 @@ window.document.addEventListener("DOMContentLoaded",function(){
     
   }
   else if(window.document.location.pathname == '/profile.html'){
+
+    function validatePassword(){
+      var letters = /[A-Za-z]/g;
+      if(psw.value!.match(letters)) {  
+        letter.classList.remove("invalid");
+        letter.classList.add("valid");
+      } else {
+        letter.classList.remove("valid");
+        letter.classList.add("invalid");
+      }
+
+    
+
+      var numbers = /[0-9]/g;
+      if(psw.value.match(numbers)) {  
+        number.classList.remove("invalid");
+        number.classList.add("valid");
+      } else {
+        number.classList.remove("valid");
+        number.classList.add("invalid");
+      }
+
+      if(psw.value.length >= 8) {
+        length.classList.remove("invalid");
+        length.classList.add("valid");
+      } else {
+        length.classList.remove("valid");
+        length.classList.add("invalid");
+      }
+
+
+    }
+    var psw = document.getElementById("psw")! as HTMLInputElement;
+    var letter = document.getElementById("letter")!;
+    var number = document.getElementById("number")!;
+    var length = document.getElementById("length")!;
+
+    psw.onfocus = function() {
+      document.getElementById("passMessage")!.style.display = "block";
+      validatePassword()
+    }
+
+    psw.onblur = function() {
+      document.getElementById("passMessage")!.style.display = "none";
+    }
+
+    psw.onkeyup = function() {
+
+      validatePassword()
+    }
     if(localStorage.getItem("Access") == "1"){
 
       console.log(document.getElementsByTagName("a"))
@@ -906,10 +963,27 @@ window.document.addEventListener("DOMContentLoaded",function(){
       staffContainer.getElementsByClassName('role')[0].textContent = accesstoRole[data[0].access];
       (staffContainer.getElementsByClassName('password')[0] as HTMLInputElement).value = data[0].passw
       staffContainer.getElementsByClassName("Edit")[0].addEventListener("click", () => {
+        
         if(staffContainer.getElementsByClassName('Edit')[0].textContent == "Save"){
+          if(!validateEmail(staffContainer.getElementsByClassName('email')[0].querySelector("input")!.value)){
+            alert("Invalid Email")
+            return
+          }
+          if(isNaN(parseInt(staffContainer.getElementsByClassName('phone')[0].querySelector("input")!.value)) || staffContainer.getElementsByClassName('phone')[0].querySelector("input")!.value.length != 8){
+            alert("Invalid Phone")
+            return
+          }
+          if(!((staffContainer.getElementsByClassName('password')[0] as HTMLInputElement).value!.match("(?=.*\d)(?=.*[A-Za-z]).{8,}"))){
+            alert ("Invalid Password")
+            return
+          }
+
+
           (staffContainer.getElementsByClassName('Edit')[0] as HTMLButtonElement).disabled  = true;
           (staffContainer.getElementsByClassName('password')[0] as HTMLInputElement).disabled = true;
-          (staffContainer.getElementsByClassName('password')[0] as HTMLInputElement).type = "password"
+          (staffContainer.getElementsByClassName('password')[0] as HTMLInputElement).type = "password";
+          (staffContainer.getElementsByClassName('password')[0] as HTMLInputElement).pattern = "(?=.*\d)(?=.*[A-Za-z]).{8,}"
+
 
 
           staffContainer.getElementsByClassName('email')[0].textContent = `Email: ${staffContainer.getElementsByClassName('email')[0].querySelector("input")!.value}`
@@ -917,8 +991,8 @@ window.document.addEventListener("DOMContentLoaded",function(){
           const editMessage  = {
             type:"editProfile",
             token: localStorage.getItem("Token"),
-            email: staffContainer.getElementsByClassName('email')[0].textContent,
-            phone: staffContainer.getElementsByClassName('phone')[0].textContent,
+            email: staffContainer.getElementsByClassName('email')[0].querySelector("input")!.value,
+            phone: staffContainer.getElementsByClassName('phone')[0].querySelector("input")!.value,
             passw: (staffContainer.getElementsByClassName('password')[0] as HTMLInputElement).value
           }
           console.log(editMessage)
@@ -939,7 +1013,7 @@ window.document.addEventListener("DOMContentLoaded",function(){
           })
           setTimeout(() => {
             (staffContainer.getElementsByClassName('Edit')[0] as HTMLButtonElement).disabled  = false
-            staffContainer.getElementsByClassName('Edit')[0].textContent = "Edit";
+            staffContainer.getElementsByClassName('Edit')[0].textContent = "Edit Profile";
           },1000)
 
         }

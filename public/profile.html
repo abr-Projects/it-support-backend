@@ -37,8 +37,15 @@
             <div class="cGroup">
 
                 <h5>Password: </h3>
-                <input type="password" class="password" disabled/>
+                <input id="psw" type="password" class="password" pattern="(?=.*\d)(?=.*[A-Za-z]).{8,}" disabled/>
             </div>
+            <div id="passMessage">
+                <h3>Password must contain the following:</h3>
+                <p id="letter" class="invalid">A <b>letter</b></p>
+                <p id="number" class="invalid">A <b>number</b></p>
+                <p id="length" class="invalid">Minimum <b>8 characters</b></p>
+              </div>
+                              
             <button class="Edit">Edit Profile</button>
 
         </div>  
